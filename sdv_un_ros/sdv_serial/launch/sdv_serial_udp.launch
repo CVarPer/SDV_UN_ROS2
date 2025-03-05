@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- ROS Params-->
+    <rosparam command="load" file="$(find sdv_nav)/sdv_params.yaml" />
+
+    <!-- Serial Communication with Tiva Board -->
+    <node name="sdv_serial_node" pkg="sdv_serial" type="sdv_serial_node" output="screen" respawn="true" respawn_delay="5" />
+
+    <!-- UDP Local control -->
+    <include file="$(find sdv_scripts)/launch/udp_control.launch"></include>
+
+</launch>

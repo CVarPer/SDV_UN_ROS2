@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+  <name>sdv_un_ros</name>
+  <version>2.0.0</version>
+  <description>Metapackage of software to install on SDVUNx.</description>
+
+  <maintainer email="jhangaritamo@unal.edu.co">Jhonyfer Angarita Moreno</maintainer>
+  <author email="jhangaritamo@unal.edu.co">Jhonyfer Angarita Moreno</author>
+
+  <license>BSD</license>
+
+  <url type="website"></url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>sdv_messages</run_depend>
+  <run_depend>sdv_nav</run_depend>
+  <run_depend>sdv_serial</run_depend>
+
+  <export>
+    <metapackage />
+  </export>
+</package>
