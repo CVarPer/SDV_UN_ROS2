@@ -1,11 +1,17 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(sdv_nav)
- 
-find_package( catkin REQUIRED COMPONENTS
-  rospy
+
+# Find required packages
+find_package(ament_cmake REQUIRED)
+find_package(rclpy REQUIRED)
+
+# Install Python scripts
+install(
+  DIRECTORY scripts/
+  DESTINATION lib/${PROJECT_NAME}
+  USE_SOURCE_PERMISSIONS
 )
 
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+# Export dependencies
+ament_package()
 

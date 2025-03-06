@@ -1,0 +1,46 @@
+[0.184s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_process -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process
+[1.581s] -- The C compiler identification is GNU 13.3.0
+[2.129s] -- The CXX compiler identification is GNU 13.3.0
+[2.274s] -- Detecting C compiler ABI info
+[3.961s] -- Detecting C compiler ABI info - done
+[3.974s] -- Check for working C compiler: /usr/bin/cc - skipped
+[3.974s] -- Detecting C compile features
+[3.974s] -- Detecting C compile features - done
+[4.157s] -- Detecting CXX compiler ABI info
+[6.780s] -- Detecting CXX compiler ABI info - done
+[6.795s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[6.796s] -- Detecting CXX compile features
+[6.796s] -- Detecting CXX compile features - done
+[7.309s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[8.713s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[9.997s] -- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+[10.013s] -- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+[10.410s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[10.479s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[10.612s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[10.696s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[10.835s] -- Found action_msgs: 2.0.2 (/opt/ros/jazzy/share/action_msgs/cmake)
+[11.051s] -- Found geometry_msgs: 5.3.5 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[11.117s] -- Found nav2_msgs: 1.3.4 (/opt/ros/jazzy/share/nav2_msgs/cmake)
+[11.956s] -- Configuring done (11.2s)
+[12.065s] -- Generating done (0.0s)
+[12.075s] [33mCMake Warning:
+[12.084s]   Manually-specified variables were not used by the project:
+[12.089s] 
+[12.090s]     CATKIN_INSTALL_INTO_PREFIX_ROOT
+[12.090s]     CATKIN_SYMLINK_INSTALL
+[12.091s] 
+[12.107s] [0m
+[12.124s] -- Build files have been written to: /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[12.352s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_process -DCATKIN_INSTALL_INTO_PREFIX_ROOT=0 -DCATKIN_SYMLINK_INSTALL=ON -DCMAKE_INSTALL_PREFIX=/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process
+[12.451s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[12.752s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[12.789s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[12.806s] -- Install configuration: ""
+[12.808s] [31mCMake Error at cmake_install.cmake:46 (file):
+[12.809s]   file INSTALL cannot find
+[12.809s]   "/home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_process/firebase_coms/firebase_launcher.sh":
+[12.809s]   No such file or directory.
+[12.809s] 
+[12.810s] [0m
+[12.812s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '1': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process

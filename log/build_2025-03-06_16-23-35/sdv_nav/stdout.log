@@ -1,0 +1,30 @@
+-- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Override CMake install command with custom implementation using symlinks instead of copying resources
+-- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav
+-- Install configuration: ""
+-- Execute custom install script
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/ament_index/resource_index/package_run_dependencies/sdv_nav
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/ament_index/resource_index/parent_prefix_path/sdv_nav
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/environment/ament_prefix_path.sh
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/environment/ament_prefix_path.dsv
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/environment/path.sh
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/environment/path.dsv
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/local_setup.bash
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/local_setup.sh
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/local_setup.zsh
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/local_setup.dsv
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/package.dsv
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/ament_index/resource_index/packages/sdv_nav
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/cmake/sdv_navConfig.cmake
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/cmake/sdv_navConfig-version.cmake
+-- Symlinking: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/share/sdv_nav/package.xml
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/fake_odometry.py
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/costmap_cleaner.py
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/get_param.py
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/scan_data_source.sh
+-- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/pose_to_tf.py

@@ -1,0 +1,74 @@
+[0.000000] (-) TimerEvent: {}
+[0.001016] (-) JobUnselected: {'identifier': 'rtabmap_conversions'}
+[0.001151] (-) JobUnselected: {'identifier': 'rtabmap_demos'}
+[0.001304] (-) JobUnselected: {'identifier': 'rtabmap_examples'}
+[0.001391] (-) JobUnselected: {'identifier': 'rtabmap_launch'}
+[0.001535] (-) JobUnselected: {'identifier': 'rtabmap_msgs'}
+[0.001606] (-) JobUnselected: {'identifier': 'rtabmap_odom'}
+[0.001674] (-) JobUnselected: {'identifier': 'rtabmap_python'}
+[0.001742] (-) JobUnselected: {'identifier': 'rtabmap_ros'}
+[0.001810] (-) JobUnselected: {'identifier': 'rtabmap_rviz_plugins'}
+[0.001983] (-) JobUnselected: {'identifier': 'rtabmap_slam'}
+[0.002053] (-) JobUnselected: {'identifier': 'rtabmap_sync'}
+[0.002158] (-) JobUnselected: {'identifier': 'rtabmap_util'}
+[0.002248] (-) JobUnselected: {'identifier': 'rtabmap_viz'}
+[0.002370] (-) JobUnselected: {'identifier': 'sdv_joystick'}
+[0.002448] (-) JobUnselected: {'identifier': 'sdv_msgs'}
+[0.002510] (-) JobUnselected: {'identifier': 'sdv_platform'}
+[0.002576] (-) JobUnselected: {'identifier': 'sdv_process'}
+[0.002732] (-) JobUnselected: {'identifier': 'sdv_scripts'}
+[0.002798] (-) JobUnselected: {'identifier': 'sdv_serial'}
+[0.002957] (-) JobUnselected: {'identifier': 'sdv_un_ros'}
+[0.003042] (sdv_nav) JobQueued: {'identifier': 'sdv_nav', 'dependencies': OrderedDict({'sdv_msgs': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_msgs', 'sdv_scripts': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts'})}
+[0.003139] (sdv_nav) JobStarted: {'identifier': 'sdv_nav'}
+[0.033507] (sdv_nav) JobProgress: {'identifier': 'sdv_nav', 'progress': 'cmake'}
+[0.034397] (sdv_nav) Command: {'cmd': ['/usr/bin/cmake', '/home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_nav', '-DCATKIN_INSTALL_INTO_PREFIX_ROOT=0', '-DCATKIN_SYMLINK_INSTALL=ON', '-DCMAKE_INSTALL_PREFIX=/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav'], 'cwd': '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav', 'env': OrderedDict({'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'sdvun2-ros2', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'GIT_ASKPASS': '/usr/share/code/resources/app/extensions/git/dist/askpass.sh', 'ROS_PACKAGE_PATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts/share', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts/lib:/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_msgs/lib:/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/cafsanchezdi', 'CHROME_DESKTOP': 'code.desktop', 'OLDPWD': '/home/cafsanchezdi/sdv_un_ros2_ws', 'TERM_PROGRAM_VERSION': '1.97.2', 'DESKTOP_SESSION': 'ubuntu', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/code.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'VSCODE_GIT_ASKPASS_MAIN': '/usr/share/code/resources/app/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/usr/share/code/code', 'MANAGERPID': '2800', 'PYDEVD_DISABLE_FILE_VALIDATION': '1', 'SYSTEMD_EXEC_PID': '3071', 'BUNDLED_DEBUGPY_PATH': '/home/cafsanchezdi/.vscode/extensions/ms-python.debugpy-2025.4.0-linux-x64/bundled/libs/debugpy', 'IM_CONFIG_CHECK_ENV': '1', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '3902', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'sdvun2-ros2', 'JOURNAL_STREAM': '9:18882', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.Shell@wayland.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'PKG_CONFIG_PATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts/lib/x86_64-linux-gnu/pkgconfig:/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts/lib/pkgconfig', 'USERNAME': 'sdvun2-ros2', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/cafsanchezdi/.vscode/extensions/ms-python.debugpy-2025.4.0-linux-x64/bundled/scripts/noConfigScripts', 'SESSION_MANAGER': 'local/sdvun2-ros2:@/tmp/.ICE-unix/3040,unix/sdvun2-ros2:/tmp/.ICE-unix/3040', 'INVOCATION_ID': 'd166019cb8d14361bec408c362f7902d', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'GDK_BACKEND': 'x11', 'DISPLAY': ':0', 'VSCODE_DEBUGPY_ADAPTER_ENDPOINTS': '/home/cafsanchezdi/.vscode/extensions/ms-python.debugpy-2025.4.0-linux-x64/.noConfigDebugAdapterEndpoints/endpoint-9764b0009bfd77e8.txt', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'Unity', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.GFGN22', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-a624612dc5.sock', 'TERM_PROGRAM': 'vscode', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_msgs:/opt/ros/jazzy', 'ORIGINAL_XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GJS_DEBUG_OUTPUT': 'stderr', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts/lib/python3.12/site-packages:/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'CMAKE_PREFIX_PATH': '/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_scripts:/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor'}), 'shell': False}
+[0.052883] (sdv_nav) StderrLine: {'line': b'\x1b[0mCMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):\n'}
+[0.053377] (sdv_nav) StderrLine: {'line': b'  Compatibility with CMake < 3.5 will be removed from a future version of\n'}
+[0.053653] (sdv_nav) StderrLine: {'line': b'  CMake.\n'}
+[0.053850] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.054030] (sdv_nav) StderrLine: {'line': b'  Update the VERSION argument <min> value or use a ...<max> suffix to tell\n'}
+[0.054209] (sdv_nav) StderrLine: {'line': b'  CMake that the project does not need compatibility with older versions.\n'}
+[0.054426] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.054596] (sdv_nav) StderrLine: {'line': b'\x1b[0m\n'}
+[0.099619] (-) TimerEvent: {}
+[0.147310] (sdv_nav) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.199736] (-) TimerEvent: {}
+[0.262271] (sdv_nav) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.299850] (-) TimerEvent: {}
+[0.302065] (sdv_nav) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.399991] (-) TimerEvent: {}
+[0.500409] (-) TimerEvent: {}
+[0.504721] (sdv_nav) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.525832] (sdv_nav) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.526444] (sdv_nav) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.527882] (sdv_nav) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.545473] (sdv_nav) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.600538] (-) TimerEvent: {}
+[0.700895] (-) TimerEvent: {}
+[0.759193] (sdv_nav) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.782263] (sdv_nav) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[0.782798] (sdv_nav) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.783760] (sdv_nav) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[0.801062] (-) TimerEvent: {}
+[0.816700] (sdv_nav) StderrLine: {'line': b'\x1b[31mCMake Error at CMakeLists.txt:4 (find_package):\n'}
+[0.817432] (sdv_nav) StderrLine: {'line': b'  By not providing "Findcatkin.cmake" in CMAKE_MODULE_PATH this project has\n'}
+[0.817702] (sdv_nav) StderrLine: {'line': b'  asked CMake to find a package configuration file provided by "catkin", but\n'}
+[0.817917] (sdv_nav) StderrLine: {'line': b'  CMake did not find one.\n'}
+[0.818167] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.818446] (sdv_nav) StderrLine: {'line': b'  Could not find a package configuration file provided by "catkin" with any\n'}
+[0.818635] (sdv_nav) StderrLine: {'line': b'  of the following names:\n'}
+[0.818794] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.819018] (sdv_nav) StderrLine: {'line': b'    catkinConfig.cmake\n'}
+[0.819175] (sdv_nav) StderrLine: {'line': b'    catkin-config.cmake\n'}
+[0.819400] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.819561] (sdv_nav) StderrLine: {'line': b'  Add the installation prefix of "catkin" to CMAKE_PREFIX_PATH or set\n'}
+[0.819749] (sdv_nav) StderrLine: {'line': b'  "catkin_DIR" to a directory containing one of the above files.  If "catkin"\n'}
+[0.819910] (sdv_nav) StderrLine: {'line': b'  provides a separate development package or SDK, be sure it has been\n'}
+[0.820111] (sdv_nav) StderrLine: {'line': b'  installed.\n'}
+[0.820342] (sdv_nav) StderrLine: {'line': b'\n'}
+[0.820574] (sdv_nav) StderrLine: {'line': b'\x1b[0m\n'}
+[0.820749] (sdv_nav) StdoutLine: {'line': b'-- Configuring incomplete, errors occurred!\n'}
+[0.826130] (sdv_nav) CommandEnded: {'returncode': 1}
+[0.866590] (sdv_nav) JobEnded: {'identifier': 'sdv_nav', 'rc': 1}
+[0.877662] (-) EventReactorShutdown: {}

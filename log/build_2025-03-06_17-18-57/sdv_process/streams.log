@@ -1,0 +1,35 @@
+[0.019s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[0.112s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.634s] -- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.635s] -- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+[0.704s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.728s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.752s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.780s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.839s] -- Found action_msgs: 2.0.2 (/opt/ros/jazzy/share/action_msgs/cmake)
+[0.943s] -- Found geometry_msgs: 5.3.5 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[0.972s] -- Found nav2_msgs: 1.3.4 (/opt/ros/jazzy/share/nav2_msgs/cmake)
+[1.325s] -- Configuring done (1.2s)
+[1.342s] -- Generating done (0.0s)
+[1.346s] -- Build files have been written to: /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[1.395s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[1.417s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[1.431s] -- Install configuration: ""
+[1.432s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/lib/sdv_process/firebase_coms_launcher.sh
+[1.432s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/ament_index/resource_index/package_run_dependencies/sdv_process
+[1.433s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/ament_index/resource_index/parent_prefix_path/sdv_process
+[1.433s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/environment/ament_prefix_path.sh
+[1.434s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/environment/ament_prefix_path.dsv
+[1.434s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/environment/path.sh
+[1.435s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/environment/path.dsv
+[1.435s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/local_setup.bash
+[1.435s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/local_setup.sh
+[1.436s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/local_setup.zsh
+[1.436s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/local_setup.dsv
+[1.436s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/package.dsv
+[1.437s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/ament_index/resource_index/packages/sdv_process
+[1.437s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.437s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/cmake/sdv_processConfig.cmake
+[1.438s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/cmake/sdv_processConfig-version.cmake
+[1.438s] -- Installing: /home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_process/share/sdv_process/package.xml
+[1.440s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process

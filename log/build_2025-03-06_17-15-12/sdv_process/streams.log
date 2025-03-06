@@ -1,0 +1,24 @@
+[0.091s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[0.583s] -- Found ament_cmake: 2.5.3 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.530s] -- Found rclpy: 7.1.3 (/opt/ros/jazzy/share/rclpy/cmake)
+[1.531s] -- Found std_msgs: 5.3.5 (/opt/ros/jazzy/share/std_msgs/cmake)
+[1.765s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[1.808s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[1.862s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.919s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[2.042s] -- Found action_msgs: 2.0.2 (/opt/ros/jazzy/share/action_msgs/cmake)
+[2.217s] -- Found geometry_msgs: 5.3.5 (/opt/ros/jazzy/share/geometry_msgs/cmake)
+[2.268s] -- Found nav2_msgs: 1.3.4 (/opt/ros/jazzy/share/nav2_msgs/cmake)
+[3.050s] -- Configuring done (2.5s)
+[3.178s] -- Generating done (0.0s)
+[3.189s] -- Build files have been written to: /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[3.373s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process -- -j8 -l8
+[3.399s] Invoking command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
+[3.416s] -- Install configuration: ""
+[3.426s] [31mCMake Error at cmake_install.cmake:46 (file):
+[3.426s]   file INSTALL cannot find
+[3.427s]   "/home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_process/firebase_coms/firebase_coms_launcher.sh":
+[3.427s]   No such file or directory.
+[3.427s] 
+[3.428s] [0m
+[3.430s] Invoked command in '/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process' returned '1': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_process
