@@ -28,19 +28,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/TagRfid.msg"
   "msg/TwoMotors.msg"
   "msg/Ultrasound.msg"
-  DEPENDENCIES std_msgs
+  DEPENDENCIES std_msgs geometry_msgs
 )
 
 ament_export_dependencies(rosidl_default_runtime)
-
-
-
-
-# Ensure message headers are installed
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
 
 #Generate added messages and services
 ament_package()
