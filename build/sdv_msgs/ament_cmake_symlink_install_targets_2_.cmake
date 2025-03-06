@@ -1,1 +1,0 @@
-ament_cmake_symlink_install_targets("TARGET_FILES" "/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_msgs/rosidl_generator_py/sdv_msgs/sdv_msgs_s__rosidl_typesupport_c.so" "TARGETS" "sdv_msgs_s__rosidl_typesupport_c" "DESTINATION" "lib/python3.12/site-packages/sdv_msgs")

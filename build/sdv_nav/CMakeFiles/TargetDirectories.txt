@@ -1,9 +1,0 @@
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/uninstall.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/sdv_nav_uninstall.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/test.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/edit_cache.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/rebuild_cache.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/list_install_components.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/install.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/install/local.dir
-/home/cafsanchezdi/sdv_un_ros2_ws/src/build/sdv_nav/CMakeFiles/install/strip.dir

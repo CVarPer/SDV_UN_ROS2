@@ -15,8 +15,7 @@ install(PROGRAMS
 )
 
 # Export dependencies
-ament_export_dependencies(rclpy std_msgs action_msgs geometry_msgs nav2_msgs)  # ✅ Export Nav2
-
+ament_export_dependencies(rclpy std_msgs action_msgs geometry_msgs nav2_msgs)  
 # Required for ament
 ament_package()
 

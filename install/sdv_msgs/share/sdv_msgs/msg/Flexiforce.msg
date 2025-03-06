@@ -1,1 +1,0 @@
-/home/cafsanchezdi/sdv_un_ros2_ws/src/sdv_un_ros/sdv_msgs/msg/Flexiforce.msg

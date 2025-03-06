@@ -1,5 +1,0 @@
-/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/fake_odometry.py
-/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/costmap_cleaner.py
-/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/get_param.py
-/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/scan_data_source.sh
-/home/cafsanchezdi/sdv_un_ros2_ws/src/install/sdv_nav/lib/sdv_nav/pose_to_tf.py
