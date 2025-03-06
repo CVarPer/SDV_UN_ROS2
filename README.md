@@ -1,4 +1,4 @@
-# SDV_UN Package, now on ROS 2 Jazzy
+# SDV_UN Platform, now on ROS 2 Jazzy
 This is the documentation for most recent development for SDV vehicles in LabFabEx laboratory, corresponding to ROS 2 Jazzy. If you want to access previous works, you may refer to `sdv_melodic` branch. This repository intends to keep track of continuous efforts and provide accessibility to all interested users.
 
 Sincethere are several aspects of SDV_UN development documented in existing documentation, such as firmware, hardware and communications, we will focus on the migration specifics and considerations.
