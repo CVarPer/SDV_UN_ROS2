@@ -6,111 +6,75 @@ mobile robots can move. You can select one of them introducing a number in the
 screen. This aplication uses a node that subscribes to /move_base_simple/goal 
 topic, sending PoseStamped messages.
 '''
-import rospy
+
+import rclpy
+from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
 
 
-'''
-Sender: This class stores multiple locations from LabFabEx and can publish 
-everyone using an especific method over '/move_base_simple/goal' topic.
-'''
-class Sender():
+class Sender(Node):
+    """Handles goal pose publishing for predefined locations."""
+
     def __init__(self):
+        super().__init__('sdv_send2location')
+
+        self.pub = self.create_publisher(PoseStamped, '/move_base_simple/goal', 10)
+
         self.pose = PoseStamped()
-        self.pose.header.stamp = rospy.Time.now()
         self.pose.header.frame_id = "map"
-        self.pose.pose.position.x = 0
-        self.pose.pose.position.y = 0
-        self.pose.pose.position.z = 0
-        self.pose.pose.orientation.x = 0
-        self.pose.pose.orientation.y = 0
-        self.pose.pose.orientation.z = 0
-        self.pose.pose.orientation.w = 1
-        self.pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, 
-                                   queue_size=100)
+
+    def send_goal(self, x, y, z, w):
+        """Sets and publishes a PoseStamped message with the given coordinates."""
+        self.pose.header.stamp = self.get_clock().now().to_msg()
+        self.pose.pose.position.x = x
+        self.pose.pose.position.y = y
+        self.pose.pose.orientation.z = z
+        self.pose.pose.orientation.w = w
+        self.pub.publish(self.pose)
+        self.get_logger().info("Goal sent.")
 
     def sendSDVtoExperimentalCell(self):
-        self.pose.pose.position.x = 0.8
-        self.pose.pose.position.y = 5.8
-        self.pose.pose.orientation.z = 0.0
-        self.pose.pose.orientation.w = 0.1
+        self.send_goal(0.8, 5.8, 0.0, 0.1)
 
     def sendSDVtoManufacturingCell(self):
-        self.pose.pose.position.x = 0.801138877869
-        self.pose.pose.position.y = -4.6122341156
-        self.pose.pose.orientation.z = 0.700009406104
-        self.pose.pose.orientation.w = 0.714133622907
+        self.send_goal(0.801138877869, -4.6122341156, 0.700009406104, 0.714133622907)
 
     def sendSDVtoIndustrialCell(self):
-        self.pose.pose.position.x = 6.76584243774
-        self.pose.pose.position.y = 3.13956570625
-        self.pose.pose.orientation.z = 1.0
-        self.pose.pose.orientation.w = 0.0
+        self.send_goal(6.76584243774, 3.13956570625, 1.0, 0.0)
 
     def sendSDVtoMotomanUnloadingPlace(self):
-        self.pose.pose.position.x = 6.76584243774
-        self.pose.pose.position.y = 3.13956570625
-        self.pose.pose.orientation.z = 1.0
-        self.pose.pose.orientation.w = 0.0
+        self.send_goal(6.76584243774, 3.13956570625, 1.0, 0.0)
 
     def sendSDVtoHome(self):
-        self.pose.pose.position.x = 0
-        self.pose.pose.position.y = 0
-        self.pose.pose.orientation.z = 0.0
-        self.pose.pose.orientation.w = 1.0
+        self.send_goal(0.0, 0.0, 0.0, 1.0)
 
     def sendSDVtoC1(self):
-        self.pose.pose.position.x = 0.7067
-        self.pose.pose.position.y = -2.9218
-        self.pose.pose.orientation.z = 0.69
-        self.pose.pose.orientation.w = 0.715
-
-    def publishPoseStamped(self):
-        self.pose.header.stamp = rospy.Time().now()
-        self.pub.publish(self.pose)
-# End of Sender Class
+        self.send_goal(0.7067, -2.9218, 0.69, 0.715)
 
 
 def print_menu():
-    print("Select an option\n" +
-      "  1) Send to Experimental Cell\n" +
-      "  2) Send to Manufacturing Cell\n" +
-      "  3) Send to Industrial Cell\n" +
-      "  4) Send to Motoman unloading place\n" +
-      "  5) Send to Home\n" +
-      "  6) Send to Prototyping Cell\n" +
-      "  7) Print menu again\n" +
-      "  8) Exit")
+    """Prints the menu options."""
+    print("Select an option\n"
+          "  1) Send to Experimental Cell\n"
+          "  2) Send to Manufacturing Cell\n"
+          "  3) Send to Industrial Cell\n"
+          "  4) Send to Motoman unloading place\n"
+          "  5) Send to Home\n"
+          "  6) Send to Prototyping Cell (Not implemented)\n"
+          "  7) Print menu again\n"
+          "  8) Exit")
 
-def main():
 
-    # Configuring the node
-    rospy.init_node('sdv_send2location', anonymous=True)
+def main(args=None):
+    """Main function handling user input and publishing goals."""
+    rclpy.init(args=args)
     sender = Sender()
-    #rate = rospy.Rate(10) # 10hz
-    n_options = 8
-
     print_menu()
 
-    # Menu loop
-    ready = False
-    exit = False
-    while not rospy.is_shutdown() and (not exit):
-        while not ready:
-            # Reading input
-            try:
-                option = str(input())
-            except ValueError:
-                print("Must enter digits!")
-                option = str(n_options + 1)
-            except NameError:
-                print("Must enter digits!")
-                option = str(n_options + 1)
-            except SyntaxError:
-                option = str(n_options + 1)
-            
-            # Procesing input
-            ready = True
+    try:
+        while rclpy.ok():
+            option = input().strip()
+
             if option == '1':
                 sender.sendSDVtoExperimentalCell()
             elif option == '2':
@@ -122,25 +86,22 @@ def main():
             elif option == '5':
                 sender.sendSDVtoHome()
             elif option == '6':
-                print()
-                print("Not implemented... Try other")
+                print("\nNot implemented... Try another option.")
             elif option == '7':
                 print_menu()
-            elif option == str(n_options):
-                ready = False
-                exit = True
-                print("Exiting")
-                return
+            elif option == '8':
+                print("Exiting.")
+                break
             else:
-                ready = False
-                print("Wrong command. Insert a value between 1 and {}".format(n_options))
-        
-        # Publishing message
-        if not rospy.is_shutdown() and ready:
-            sender.publishPoseStamped()
-            print("Location sended")
-            ready = False
+                print(f"Wrong command. Insert a value between 1 and 8.")
 
-# Main
+    except KeyboardInterrupt:
+        pass
+    finally:
+        sender.destroy_node()
+        rclpy.shutdown()
+
+
 if __name__ == '__main__':
     main()
+

@@ -1,4 +1,4 @@
 # Battery.msg
 
-Header header
+std_msgs/Header header
 Battery[] batteries

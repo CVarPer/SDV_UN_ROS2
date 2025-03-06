@@ -84,8 +84,42 @@ When migrating from ROS 1 to ROS 2, it is crucial to understand the fundamental 
 - `colcon` enables parallel builds and improved dependency management.  
 
 #### **CMake and `package.xml` Changes**  
-- The `CMakeLists.txt` structure differs, requiring `ament_cmake` instead of `catkin`.  
-- `package.xml` uses different format versions and additional tags for ROS 2 compatibility.  
+
+CMakesLists.txt files contain build instructions for a package use by CMake. Naturally, they're necessary for every single package contained in a workspace. 
+General structure for CMake files can be:
+
+```
+cmake_minimum_required(VERSION 3.5)
+project(my_package)
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+
+# Add executable
+add_executable(my_node src/my_node.cpp)
+
+# Target dependencies
+target_link_libraries(my_node ${rclcpp_LIBRARIES})
+```
+Compared with how CMakesLists.txt files behave, the structure differs, requiring `ament_cmake` instead of `catkin`. It is also necessary to verify thatt cmake version is at least 3.2 or later.
+
+As for package.xml files, they contain metadata about a package, such as its name, version, dependencies, and build dependencies.
+- `package.xml` uses different format versions and additional tags for ROS 2 compatibility, being  `ament cmake`replacement for `catkin`. An example for a file of this type can be seen below
+
+```
+<?xml version="1.0"?>
+<package>
+  <name>my_package</name>
+  <version>0.0.0</version>
+  <description>A package that does something</description>
+  <maintainer email="user@example.com">User</maintainer>
+  <license>Apache-2.0</license>
+
+  <depend>ament_cmake</depend>
+  <depend>rclcpp</depend>
+</package>
+```
 
 ---
 
@@ -154,9 +188,42 @@ _(Define a structured process for migrating each package, verifying functionalit
 
 ### **3.1 Installing and Configuring ROS 2 Jazzy on Ubuntu 24.04**  
 
-#### Requirements
- - ROS 2 Jazzy (or later)
- - 
+##### Prerequisites
+
+Ensure you have the following installed:
+- Ubuntu 22.04 (or compatible version for ROS 2)
+- ROS 2 (Jazzy recommended)
+- Colcon (build tool)
+- VCSTool (for managing repositories)
+
+If ROS 2 is not installed, follow the [official guide](https://docs.ros.org/en/ros2_documentation/index.html) to set it up.
+
+#### Step 1: Create a ROS 2 Workspace
+
+```bash
+mkdir -p ~/ros2_ws/src
+cd ~/ros2_ws
+```
+
+#### Step 2: Initialize the Workspace
+
+```bash
+colcon build --symlink-install
+```
+
+#### Step 3: Source the Workspace
+
+After building, source the workspace to make the packages available:
+
+```bash
+source install/setup.bash
+```
+To make it persistent, add it to `~/.bashrc`:
+
+```bash
+echo 'source ~/ros2_ws/install/setup.bash' >> ~/.bashrc
+source ~/.bashrc
+```
 
 ### **3.2 Strategies for Testing and Comparing ROS 1 (Ubuntu 18.04) vs ROS 2 (Ubuntu 23.04)**  
 _(Running both environments for side-by-side testing.)_  

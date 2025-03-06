@@ -18,113 +18,90 @@ Parameters that you can configure (speeds and accelerations) are:
 Example of use:
 rosrun sdv_scripts key_to_twist.py _linear_scale:=1.0 _angular_scale:=1.0
 '''
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-import rospy
+import rclpy
+from rclpy.node import Node
 import math
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist
 
-key_mapping = { 'w': [ 1,  0],  # Forward
-                's': [-1,  0],  # Backward
-                'a': [ 0,  1],  # Turn counter clokcwise
-                'd': [ 0, -1],  # Turn clockwise
-                'x': [ 0,  0]}  # Stop
+class KeyToTwist(Node):
 
-g_twist_pub = None
-g_target_twist = None
-g_last_twist = None
-g_last_send_time = None
-g_vel_scales = [0.1, 0.1] # default to very slow
-g_vel_ramps = [1, 1] # units: meters per second^2
-rate = 20
-key_stamp = None
+    def __init__(self):
+        super().__init__('keys_to_twist')
 
+        # Key mapping
+        self.key_mapping = {
+            'w': [ 1,  0],  # Forward
+            's': [-1,  0],  # Backward
+            'a': [ 0,  1],  # Turn counterclockwise
+            'd': [ 0, -1],  # Turn clockwise
+            'x': [ 0,  0]   # Stop
+        }
 
-def ramped_vel(v_prev, v_target, t_prev, t_now, ramp_rate):
-	step = ramp_rate * (t_now - t_prev).to_sec()
-	sign = 1.0 if (v_target > v_prev) else -1.0
-	error = math.fabs(v_target - v_prev)
-	if error < step: # we can get there within this timestep-we're done.
-		return v_target
-	else:
-		return v_prev + sign * step # take a step toward the target
+        # Publishers & Subscribers
+        self.twist_pub = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.create_subscription(String, 'keys', self.keys_cb, 10)
 
+        # Parameters (replaces fetch_param function)
+        self.vel_scales = [
+            self.declare_parameter('linear_scale', 0.1).value,
+            self.declare_parameter('angular_scale', 0.1).value
+        ]
+        self.vel_ramps = [
+            self.declare_parameter('linear_accel', 1.0).value,
+            self.declare_parameter('angular_accel', 1.0).value
+        ]
 
-def ramped_twist(prev, target, t_prev, t_now, ramps):
-	tw = Twist()
-	tw.angular.z = ramped_vel(prev.angular.z, target.angular.z, t_prev, t_now, ramps[0])
-	tw.linear.x = ramped_vel(prev.linear.x, target.linear.x, t_prev, t_now, ramps[1])
-	return tw
+        # Twist messages
+        self.target_twist = Twist()
+        self.last_twist = Twist()
+        self.last_send_time = self.get_clock().now()
+        self.key_stamp = self.get_clock().now()
 
+        # Timer to send twist messages at 20Hz
+        self.create_timer(1.0 / 20, self.send_twist)
 
-def send_twist():
-	global g_last_send_time, g_target_twist, g_last_twist
-	global g_vel_scales, g_vel_ramps, g_twist_pub
-	t_now = rospy.Time.now()
-	g_last_twist = ramped_twist(g_last_twist, 
-	                            g_target_twist, 
-	                            g_last_send_time, 
-	                            t_now, 
-	                            g_vel_ramps)
-	g_last_send_time = t_now
-	g_twist_pub.publish(g_last_twist)
+    def ramped_vel(self, v_prev, v_target, t_prev, t_now, ramp_rate):
+        step = ramp_rate * (t_now - t_prev).nanoseconds * 1e-9  # Convert ns to seconds
+        sign = 1.0 if v_target > v_prev else -1.0
+        error = abs(v_target - v_prev)
+        return v_target if error < step else v_prev + sign * step
 
+    def ramped_twist(self, prev, target, t_prev, t_now):
+        tw = Twist()
+        tw.angular.z = self.ramped_vel(prev.angular.z, target.angular.z, t_prev, t_now, self.vel_ramps[0])
+        tw.linear.x = self.ramped_vel(prev.linear.x, target.linear.x, t_prev, t_now, self.vel_ramps[1])
+        return tw
 
-def keys_cb(msg):
-	global g_target_twist, g_last_twist, g_vel_scales, key_stamp
-	if len(msg.data) == 0 or not key_mapping.has_key(msg.data[0]):
-		return # unknown key
-	vels = key_mapping[msg.data[0]]
-	g_target_twist.linear.x = vels[0] * g_vel_scales[0]
-	g_target_twist.angular.z = vels[1] * g_vel_scales[1]
-	key_stamp = rospy.Time.now()
+    def send_twist(self):
+        now = self.get_clock().now()
+        self.last_twist = self.ramped_twist(self.last_twist, self.target_twist, self.last_send_time, now)
+        self.last_send_time = now
+        self.twist_pub.publish(self.last_twist)
 
+    def keys_cb(self, msg):
+        if len(msg.data) == 0 or msg.data[0] not in self.key_mapping:
+            return  # Ignore unknown keys
 
-def zero_twist():
-	g_target_twist.linear.x = 0.0
-	g_target_twist.angular.z = 0.0
+        vels = self.key_mapping[msg.data[0]]
+        self.target_twist.linear.x = vels[0] * self.vel_scales[0]
+        self.target_twist.angular.z = vels[1] * self.vel_scales[1]
+        self.key_stamp = self.get_clock().now()
 
+    def zero_twist(self):
+        self.target_twist.linear.x = 0.0
+        self.target_twist.angular.z = 0.0
 
-def fetch_param(name, default):
-	if rospy.has_param(name):
-		return rospy.get_param(name)
-	else:
-		print("parameter {} not defined. Defaulting to {}".format(name, default))
-		return default
-
+def main(args=None):
+    rclpy.init(args=args)
+    node = KeyToTwist()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
+    main()
 
-	# Configuring node
-	rospy.init_node('keys_to_twist')
-	g_last_send_time = rospy.Time.now()
-	g_twist_pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
-	rospy.Subscriber('keys', String, keys_cb)
-	rate = rospy.Rate(rate)
-	key_stamp = rospy.Time.now()
-
-	# Twist messages
-	g_target_twist = Twist() # initializes to zero
-	g_last_twist = Twist()
-
-	# Fetching parameters
-	g_vel_scales[0] = fetch_param('~linear_scale', 0.1)
-	g_vel_scales[1] = fetch_param('~angular_scale', 0.1)
-	g_vel_ramps[0] = fetch_param('~linear_accel', 1.0)
-	g_vel_ramps[1] = fetch_param('~angular_accel', 1.0)
-
-	# Loop	
-	while not rospy.is_shutdown():
-
-		# Checking if some key messages has arrived
-		now_stamp = rospy.Time.now()
-		if key_stamp is None:
-			diff = now_stamp
-		else:
-			diff = (now_stamp - key_stamp).to_sec()
-		if diff > 0.2:
-			zero_twist()
-		
-		# Sending Twist message and sleeping
-		send_twist()
-		rate.sleep()

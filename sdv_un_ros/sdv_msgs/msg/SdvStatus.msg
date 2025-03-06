@@ -1,6 +1,6 @@
 # sdv_status.msg
 
-Header header
+std_msgs/Header header
 bool energized
 bool stand_by
 bool rotate

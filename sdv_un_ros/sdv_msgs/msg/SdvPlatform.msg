@@ -1,5 +1,5 @@
 # sdv_platform.msg
 
-Header header
+std_msgs/Header header
 string status
 string source

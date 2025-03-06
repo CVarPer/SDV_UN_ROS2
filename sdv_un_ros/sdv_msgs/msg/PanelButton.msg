@@ -1,6 +1,6 @@
 # PanelButton.msg
 
-Header header
+std_msgs/Header header
 uint8 status
 
 uint8 RELEASED = 0

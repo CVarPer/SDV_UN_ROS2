@@ -1,5 +1,5 @@
 # TwoMotors.msg
 
-Header header
+std_msgs/Header header
 float64 left
 float64 right
