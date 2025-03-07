@@ -2,43 +2,45 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <math.h>
-#include <inttypes.h>
+#include <cmath>
+#include <cinttypes>
 #include <tools.h>
 
-#include <ros/ros.h>
-#include <serial/serial.h>
-#include <std_msgs/Empty.h>
-#include <std_msgs/String.h>
-#include <sensor_msgs/Imu.h>
-#include <sensor_msgs/MagneticField.h>
-#include <geometry_msgs/Twist.h>
-#include <geometry_msgs/TwistWithCovariance.h>
-#include <geometry_msgs/TwistWithCovarianceStamped.h>
-#include <geometry_msgs/Vector3.h>
+#include <rclcpp/rclcpp.hpp>
+#include <serial_driver/serial_driver.hpp>
+#include "io_context/io_context.hpp"
+#include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/bool.hpp>
+
+#include <sensor_msgs/msg/imu.hpp>
+#include <sensor_msgs/msg/magnetic_field.hpp>
+#include <geometry_msgs/msg/twist.hpp>
+#include <geometry_msgs/msg/twist_with_covariance.hpp>
+#include <geometry_msgs/msg/twist_with_covariance_stamped.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 
 #include <motor/motor.h>
 #include <motor/two_drive_controller.h>
 #include <motor/four_drive_controller.h>
 
-#include <sdv_msgs/Batteries.h>
-#include <sdv_msgs/Battery.h>
-#include <sdv_msgs/Buzzer.h>
-#include <sdv_msgs/Encoder.h>
-#include <sdv_msgs/Flexiforce.h>
-#include <sdv_msgs/ImuRaw.h>
-#include <sdv_msgs/LED.h>
-#include <sdv_msgs/TwoMotors.h>
-#include <sdv_msgs/FourMotors.h>
-#include <sdv_msgs/PanelButton.h>
-#include <sdv_msgs/SdvStatus.h>
-#include <sdv_msgs/TagRfid.h>
-#include <sdv_msgs/Ultrasound.h>
-#include <sdv_msgs/MotorDriver.h>
-#include <sdv_msgs/Drivers.h>
-
+#include <sdv_msgs/msg/batteries.hpp>
+#include <sdv_msgs/msg/battery.hpp>
+#include <sdv_msgs/msg/buzzer.hpp>
+#include <sdv_msgs/msg/encoder.hpp>
+#include <sdv_msgs/msg/flexiforce.hpp>
+#include <sdv_msgs/msg/imu_raw.hpp>
+#include <sdv_msgs/msg/led.hpp>
+#include <sdv_msgs/msg/two_motors.hpp>
+#include <sdv_msgs/msg/four_motors.hpp>
+#include <sdv_msgs/msg/panel_button.hpp>
+#include <sdv_msgs/msg/sdv_status.hpp>
+#include <sdv_msgs/msg/tag_rfid.hpp>
+#include <sdv_msgs/msg/ultrasound.hpp>
+#include <sdv_msgs/msg/motor_driver.hpp>
+#include <sdv_msgs/msg/drivers.hpp>
 
 using namespace std;
+using namespace drivers::serial_driver;
 
 /* Constants */
 #define PORT "/dev/ttyACM0"
@@ -97,30 +99,30 @@ enum MotorModel
 // Prototypes
 //
 ////////////////////////////////////////////////////////////////////////////////
-int openSerialPort(string portx);
-void moveMotorsCallback(const geometry_msgs::Twist &cmd);
-void ledCallback(sdv_msgs::LED msg);
-void buzzerCallback(sdv_msgs::Buzzer msg);
-void superBuzzerCallback(sdv_msgs::Buzzer msg);
+int openSerialPort(const std::string& portx);
+void moveMotorsCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
+void ledCallback(sdv_msgs::msg::LED::SharedPtr msg);
+void buzzerCallback(sdv_msgs::msg::Buzzer::SharedPtr msg);
+void superBuzzerCallback(sdv_msgs::msg::Buzzer::SharedPtr msg);
 void configSerialCommunication(void);
 void readAndProcessCmd();
-void sendConfigCommand(string cmd);
-int CMD_IMUMessage(vector<string> args);
-int CMD_SAMessage(vector<string> args);
-int CMD_FlexiforceMessage(vector<string> args);
-int CMD_PanelButtonMessage(vector<string> args);
-int CMD_BatteryMessage(vector<string> args);
-int CMD_DriverStatusMessage(vector<string> args);
-int CMD_OdometryMessage(vector<string> args);
-int CMD_UltrasoundMessage(vector<string> args);
-int CMD_EmptyFunction(vector<string> args);
+void sendConfigCommand(const std::string &cmd);
+int CMD_IMUMessage(std::vector<std::string> args);
+int CMD_SAMessage(std::vector<std::string> args);
+int CMD_FlexiforceMessage(std::vector<std::string> args);
+int CMD_PanelButtonMessage(std::vector<std::string> args);
+int CMD_BatteryMessage(std::vector<std::string> args);
+int CMD_DriverStatusMessage(std::vector<std::string> args);
+int CMD_OdometryMessage(std::vector<std::string> args);
+int CMD_UltrasoundMessage(std::vector<std::string> args);
+int CMD_EmptyFunction(std::vector<std::string> args);
 
 //*****************************************************************************
 //
 // Command line function callback type.
 //
 //*****************************************************************************
-typedef int (*pfnCmdLine)(vector<string> args);
+typedef int (*pfnCmdLine)(std::vector<std::string> args);
 
 //*****************************************************************************
 //
@@ -151,7 +153,7 @@ CMD_Struct CMD_Table[] = {
     {5, CMD_FlexiforceMessage},     // Flexiforce: automatic message. Publish at 2Hz
     {6, CMD_BatteryMessage},        // Battery: automatic message. Publish at 0.5Hz
     {7, CMD_EmptyFunction},         // Time stamp: Service
-    {8, CMD_SAMessage},             // Still Alive and Aknowledge of Still Alive Message commands
+    {8, CMD_SAMessage},             // Still Alive and Acknowledge of Still Alive Message commands
     {9, CMD_EmptyFunction},         // Code for general message
     {10, CMD_PanelButtonMessage},   // Panel Button: automatic message
     {12, CMD_EmptyFunction},        // Code reset message
@@ -159,17 +161,25 @@ CMD_Struct CMD_Table[] = {
 };
 int cmd_table_size = 13;
 
-//*****************************************************************************
+////////////////////////////////////////////////////////////////////////////////
 //
 // Variables
 //
-//*****************************************************************************
-serial::Serial ser;
-vector<string> buffer_callback;
+////////////////////////////////////////////////////////////////////////////////
+drivers::common::IoContext io_context;
+drivers::serial_driver::SerialDriver ser(io_context);
+
+std::vector<std::string> buffer_callback;
 int baudrate = 921600;
-string port;
-string motor_drive_type;
+std::string port;
+std::string motor_drive_type;
 int n_motors = 0;
+//variables de escritura
+
+//std::string msg_w= "_";
+//std::vector<uint8_t> cmd_w(msg_w.begin(), msg_w.end());
+    
+
 
 BoardStatus board_status = DISCONNECTED;
 double initial_stamp_PC;
@@ -196,23 +206,54 @@ double q[4] = {1.0f, 0.0f, 0.0f, 0.0f};          // vector to hold quaternion
 double deltat = 1.0 / 10.0;                      // integration interval for both filter schemes
 
 // Publishers
-ros::Publisher encoder_pub;
-ros::Publisher sdv_status_pub;
-ros::Publisher ultrasound_pub;
-ros::Publisher flexiforce_pub;
-ros::Publisher batteries_pub;
-ros::Publisher tag_rfid_pub;
-ros::Publisher imu_pub;
-ros::Publisher imu_raw_pub;
-ros::Publisher mag_pub;
-ros::Publisher panel_button_pub;
-ros::Publisher motor_status_pub;
+rclcpp::Publisher<sdv_msgs::msg::Encoder>::SharedPtr encoder_pub;
+rclcpp::Publisher<sdv_msgs::msg::SdvStatus>::SharedPtr sdv_status_pub;
+rclcpp::Publisher<sdv_msgs::msg::Ultrasound>::SharedPtr ultrasound_pub;
+rclcpp::Publisher<sdv_msgs::msg::Flexiforce>::SharedPtr flexiforce_pub;
+rclcpp::Publisher<sdv_msgs::msg::Batteries>::SharedPtr batteries_pub;
+rclcpp::Publisher<sdv_msgs::msg::TagRfid>::SharedPtr tag_rfid_pub;
+rclcpp::Publisher<sensor_msgs::msg::Imu>::SharedPtr imu_pub;
+rclcpp::Publisher<sdv_msgs::msg::ImuRaw>::SharedPtr imu_raw_pub;
+rclcpp::Publisher<sensor_msgs::msg::MagneticField>::SharedPtr mag_pub;
+rclcpp::Publisher<sdv_msgs::msg::PanelButton>::SharedPtr panel_button_pub;
+rclcpp::Publisher<sdv_msgs::msg::Drivers>::SharedPtr motor_status_pub;
 
-//*****************************************************************************
+////////////////////////////////////////////////////////////////////////////////
 //
 // Functions
 //
-//*****************************************************************************
+////////////////////////////////////////////////////////////////////////////////
+//Función de escritura
+
+void sendMessage(const std::string& msg_w) {
+        std::vector<uint8_t> cmd_w(msg_w.begin(), msg_w.end()); // Convertir el texto en un vector de uint8_t
+        ser.port()->send(cmd_w); // Enviar el mensaje
+    }
+
+
+//Función de lectura de linea
+
+std::string readline(drivers::serial_driver::SerialDriver &ser)
+{
+    std::vector<uint8_t> buffer(1); // Crear un buffer de 1 byte
+    std::string data_stamp; // Variable para almacenar la línea leída
+
+    // Leer datos byte a byte hasta encontrar un salto de línea
+    while (true)
+    {
+        size_t bytes_received = ser.port()->receive(buffer);
+        if (bytes_received > 0) {
+            char byte = static_cast<char>(buffer[0]);
+            data_stamp += byte;  // Acumula el byte leído
+
+            // Si se recibe un salto de línea, termina la lectura
+            if (byte == '\n') {
+                break;
+            }
+        }
+    }
+    return data_stamp; // Devuelve la línea leída
+}
 
 /**
  * Callback function used by this node in "/mobile_base/commands/velocity" topic.
@@ -220,23 +261,21 @@ ros::Publisher motor_status_pub;
  *
  * @param cmd Twist message with linear and angular speeds 
  */
-void moveMotorsCallback(const geometry_msgs::Twist &cmd)
+void moveMotorsCallback(const geometry_msgs::msg::Twist::SharedPtr cmd)
 {
     // Check board status
     if (board_status == DISCONNECTED || board_status == LOCKED)
     {
-        ROS_INFO("moveMotorsCallback: board is not ok");
+        RCLCPP_INFO(rclcpp::get_logger("moveMotorsCallback"), "Board is not ok");
         return;
     }
 
     // Read values from incoming message
-    geometry_msgs::Vector3 vel_linear;
-    geometry_msgs::Vector3 vel_angular;
-    vel_linear = cmd.linear;
-    vel_angular = cmd.angular;
-    string msgss;
+    geometry_msgs::msg::Vector3 vel_linear = cmd->linear;
+    geometry_msgs::msg::Vector3 vel_angular = cmd->angular;
+    std::string msgss;
 
-    // Motor drive type: diferential
+    // Motor drive type: differential
     if(motor_drive_type == "diferential")
     {
         msgss = two_drive_controller.getCommandString(vel_linear, vel_angular);
@@ -253,188 +292,169 @@ void moveMotorsCallback(const geometry_msgs::Twist &cmd)
     if (buffer_callback.size() <= 5)
     {
         buffer_callback.insert(buffer_callback.begin(), msgss);
-        //ROS_INFO("moveMotorsCallback: Sending motor command: wL = %f, wR = %f", wL, wR);
-        //ROS_INFO_STREAM("Motor CMD: " << msgss);
     }
     else
     {
-        ROS_INFO("moveMotorsCallback: OverStack cmd: %i", int(buffer_callback.size()));
-    }
-
-}
-
-void ledCallback(sdv_msgs::LED msg)
-{
-    // Generaring message string
-    string msgss;
-    msgss = "l " + std::to_string(int(msg.red)) +
-            " " + std::to_string(int(msg.green)) +
-            " " + std::to_string(int(msg.blue)) +
-            "\r";
-
-    if (buffer_callback.size() <= 5)
-    {
-        buffer_callback.insert(buffer_callback.begin(), msgss);
-    }
-    else
-    {
-        ROS_INFO("led_updater: OverStack cmd: %i", int(buffer_callback.size()));
-    }
-}
-
-void buzzerCallback(sdv_msgs::Buzzer msg)
-{
-    // Generaring message string
-    string msgss;
-    msgss = "n " + std::to_string(int(msg.time_on)) +
-            " " + std::to_string(int(msg.time_off)) +
-            " " + std::to_string(int(msg.cicles)) +
-            "\r";
-    if (buffer_callback.size() <= 5)
-    {
-        buffer_callback.insert(buffer_callback.begin(), msgss);
-    }
-    else
-    {
-        ROS_INFO("buzzerCallback: OverStack cmd: %i", int(buffer_callback.size()));
-    }
-}
-
-void superBuzzerCallback(sdv_msgs::Buzzer msg)
-{
-    // Generaring message string
-    string msgss;
-    msgss = "sn " + std::to_string(int(msg.time_on)) +
-            " " + std::to_string(int(msg.time_off)) +
-            " " + std::to_string(int(msg.cicles)) +
-            "\r";
-    if (buffer_callback.size() <= 5)
-    {
-        buffer_callback.insert(buffer_callback.begin(), msgss);
-    }
-    else
-    {
-        ROS_INFO("superBuzzerCallback: OverStack cmd: %i", int(buffer_callback.size()));
+        RCLCPP_INFO(rclcpp::get_logger("moveMotorsCallback"), "OverStack cmd: %lu", buffer_callback.size());
     }
 }
 
 /**
- * This function configures the connected board: stops board messages and send 
- * reset command. Then, configure automatic messages and print options.
+ * Callback function for LED control in ROS 2.
+ * This function converts LED messages into Tiva's command and puts it in buffer.
+ *
+ * @param msg LED message containing RGB values
  */
-void configSerialCommunication(void)
+void ledCallback(const sdv_msgs::msg::LED::SharedPtr msg)
+{
+    // Generating message string
+    std::string msgss = "l " + std::to_string(static_cast<int>(msg->red)) +
+                         " " + std::to_string(static_cast<int>(msg->green)) +
+                         " " + std::to_string(static_cast<int>(msg->blue)) +
+                         "\r";
+
+    if (buffer_callback.size() <= 5)
+    {
+        buffer_callback.insert(buffer_callback.begin(), msgss);
+    }
+    else
+    {
+        RCLCPP_INFO(rclcpp::get_logger("ledCallback"), "OverStack cmd: %lu", buffer_callback.size());
+    }
+}
+
+/**
+ * Callback function for the buzzer command.
+ * Generates a command string for the buzzer and adds it to the buffer.
+ *
+ * @param msg Buzzer message containing time_on, time_off, and cycles.
+ */
+void buzzerCallback(const sdv_msgs::msg::Buzzer::SharedPtr msg)
+{
+    // Generating message string
+    std::string msgss = "n " + std::to_string(int(msg->time_on)) +
+                         " " + std::to_string(int(msg->time_off)) +
+                         " " + std::to_string(int(msg->cicles)) +
+                         "\r";
+    if (buffer_callback.size() <= 5)
+    {
+        buffer_callback.insert(buffer_callback.begin(), msgss);
+    }
+    else
+    {
+        RCLCPP_INFO(rclcpp::get_logger("buzzerCallback"), "OverStack cmd: %lu", buffer_callback.size());
+    }
+}
+
+void superBuzzerCallback(const sdv_msgs::msg::Buzzer::SharedPtr msg)
+{
+    // Generating message string
+    std::string msgss = "sn " + std::to_string(int(msg->time_on)) +
+                          " " + std::to_string(int(msg->time_off)) +
+                          " " + std::to_string(int(msg->cicles)) +
+                          "\r";
+    if (buffer_callback.size() <= 5)
+    {
+        buffer_callback.insert(buffer_callback.begin(), msgss);
+    }
+    else
+    {
+        RCLCPP_INFO(rclcpp::get_logger("superBuzzerCallback"), "OverStack cmd: %lu", buffer_callback.size());
+    }
+}
+
+
+/**
+ * Configures the connected board: stops board messages and sends reset command.
+ * Then, it configures automatic messages and print options.
+ */
+void configSerialCommunication()
 {
     // Send commands to stop sending messages
-    ROS_INFO("configSerialCommunication: stoping prev messages");
-    ser.write("if 0\r");
-    ser.flushOutput();
-    ser.write("sa 0\r");
-    ser.flushOutput();
-    ser.readline(ser.available());
-    ser.flushInput();
+    RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "Stopping previous messages");
+    //ser.write("if 0\r");
+    sendMessage("if 0\r"); 
+    //msg_w= "if 0\r";
+    //cmd_w = std::vector<uint8_t>(msg_w.begin(), msg_w.end());
+    //ser.port()->send(cmd_w);
+    
+    //ser.write("sa 0\r");
+    sendMessage("sa 0\r");
+    
     usleep(microseconds * 5);
-
+    
     // Reset Board
-    ROS_INFO("configSerialCommunication: reseting");
-    ser.write("rt\r");
-    ser.flushOutput();
-
+    RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "Resetting");
+//    ser.write("rt\r");
+    sendMessage("rt\r");
+    
     // Reading Timestamp in a loop
-    ROS_INFO("configSerialCommunication: reading timestamp");
+    RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "Reading timestamp");
     bool reseted = false;
-    while (!reseted and ros::ok())
+    while (!reseted && rclcpp::ok())
     {
-        std::string line_start = "";
-        if (ser.available())
-        {
-            line_start = ser.read(1);
-            //ROS_INFO_STREAM("line_strat: " << line_start);
-
-            if (line_start == "#") // Wait for start message and read some values
+        std::string line_start;
+        if (ser.port()->is_open())
+	{
+	    //line_start = ser.read(1);
+            std::vector<uint8_t> buffer(1); // Crea un buffer para un solo byte
+	    size_t bytes_received = ser.port()->receive(buffer); // Lee un byte
+	    line_start = buffer[0]; // Asigna el byte leído a line_start
+            
+            if (line_start == "#")
             {
-                // Reading stamp time from Serial input
-                std::string data_stamp = ser.readline();
-                ser.flushInput();
-
-                // Stores data in a vector of big integers
+                std::string data_stamp = readline(ser);
                 std::vector<uint64_t> vd;
                 uint64_t d = 0;
                 std::stringstream ss(data_stamp);
                 while (ss >> d)
                     vd.push_back(d);
 
-                // Apply Bit shifting to get complete number
                 uint64_t t_board = (vd[0] << 32) + vd[1];
-
-                // Time stamp of PC and Board
-                double initial_stamp_PC = ros::Time::now().toSec();
-                double initial_stamp_tiva = (double)(t_board) / 1000000;
-
-                // Print obtained Time Stamp Data
-                ROS_INFO_STREAM("data_stamp: " << tools::cleanString(data_stamp));
-                ROS_INFO("initial_stamp_PC: %f", initial_stamp_PC);
-                ROS_INFO("initial_stamp_tiva: %f", initial_stamp_tiva);
-
-                // Set 'board_is_ok' flag, allowing main loop to run
+                initial_stamp_PC = rclcpp::Clock().now().seconds();
+                initial_stamp_tiva = static_cast<double>(t_board) / 1000000;
+                
+                RCLCPP_INFO_STREAM(rclcpp::get_logger("configSerialCommunication"), "data_stamp: " << data_stamp);
+                RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "initial_stamp_PC: %f", initial_stamp_PC);
+                RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "initial_stamp_tiva: %f", initial_stamp_tiva);
+                
                 board_status = JUST_CONNECTED;
                 reseted = true;
             }
         }
         else
         {
-            ROS_INFO_STREAM("Waiting for reset message: " << line_start);
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("configSerialCommunication"), "Waiting for reset message");
             exit(2);
         }
-        //ros::spinOnce();
         usleep(microseconds);
     }
-
-    ROS_INFO("configSerialCommunication: configuring board");
-
-    // Config Board to don't send received message confirmation
+    
+    RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "Configuring board");
     sendConfigCommand("cf 0");
-
-    // Config board to auto stop if not receives motor commands
     sendConfigCommand("mt 1");
-
-    // Config board to auto turn-off RGB-LED if not receives new LED commands
     sendConfigCommand("lt 1");
-
-    // Config board to disable Sensor Data Messages if this node don't send akn msg
     sendConfigCommand("dt 1");
-
-    // Config board to send "Still Alive Messages" to PC
     sendConfigCommand("sa 1");
-
-    // Config board to send IMU data
     sendConfigCommand("if 1");
-
-    // Config board to send Flexiforce data
     sendConfigCommand("ff 1");
-
-    // Config board to send PanelButton data
     sendConfigCommand("pf 1");
-
-    // Config board to send Batteries data
     sendConfigCommand("bf 1");
-
-    // Config board to send Driver Status data
     sendConfigCommand("df 1");
-
-    // Config board to send Odometry data
     sendConfigCommand("of 1");
-
-    // Config board to send Ultrasound data
     sendConfigCommand("uf 1");
-
-    ROS_INFO("configSerialCommunication: finished");
+    RCLCPP_INFO(rclcpp::get_logger("configSerialCommunication"), "Finished");
 }
-
-void sendConfigCommand(string cmd)
+/**
+ * Sends a configuration command to the serial device.
+ * 
+ * @param cmd Command string to be sent.
+ */
+void sendConfigCommand(const std::string &cmd)
 {
-    cmd = cmd + "\r";
-    ser.write(cmd);
-    ser.flushOutput();
+    std::string command = cmd + "\r";
+//    ser.write(command);
+    sendMessage(command);
     usleep(microseconds);
 }
 
@@ -445,22 +465,23 @@ void sendConfigCommand(string cmd)
  * @param portx String with the name of port, e.g. "/dev/ttyACM0"
  * @return Integer, -1 if can't open received or other ports
  */
-int openSerialPort(string portx)
+int openSerialPort(const std::string &portx)
 {
-    //string msg = "Trying to start serial communication in %s port at %i bauds";
-    //msg = snprintf("Trying to start serial communication in %s port at %i bauds", portx, baudrate);
-    ROS_INFO("Trying to start serial communication in %s port at %i bauds", portx.c_str(), baudrate);
+    RCLCPP_INFO(rclcpp::get_logger("serial_driver"), "Trying to start serial communication in %s port at %i bauds", portx.c_str(), baudrate);
     try
     {
-        ser.setPort(portx);
-        ser.setBaudrate(baudrate);
-        serial::Timeout to = serial::Timeout::simpleTimeout(10);
-        ser.setTimeout(to);
-        ser.open();
+        drivers::serial_driver::SerialPortConfig config(baudrate, FlowControl::NONE, Parity::NONE, StopBits::ONE);
+//      ser.init(portx, baudrate);
+	ser.init_port(portx, config);
+
+//      ser.open();
+	ser.port()->open();
+
     }
-    catch (serial::IOException &e)
+    catch (const std::exception &e)
     {
-        ROS_ERROR_STREAM("Unable to open port: " << ser.getPort());
+        RCLCPP_ERROR(rclcpp::get_logger("serial_driver"), "Unable to open port: %s", portx.c_str());
+        return -1;
     }
     return 1;
 }
@@ -473,116 +494,68 @@ int openSerialPort(string portx)
  * @exception SerialException: Exit and close application
  * @exception invalid_argument: ignores the line
  **/
-void readAndProcessCmd()
+ 
+ void readAndProcessCmd()
 {
     try
     {
-        // Search for available data in serial port
-        if (board_status == OK or board_status == JUST_CONNECTED and ser.available())
+        // Verifica si la placa está conectada y el puerto serie está abierto
+        if ((board_status == OK || board_status == JUST_CONNECTED) && ser.port()->is_open())
         {
-            /*
-            Store serial input in a String. Read chars until find a *\n* character.
-            If board is locked, the *\n* char never will arrive: using timestamps allow to 
-            control if reading a char is taking much time.
-            */
             std::stringstream input_line;
-            string last_char = "";
-            string input_msg;
+            std::string last_char = "";
+            std::string input_msg;
             bool new_line_char = false;
             bool return_line_char = false;
             bool complete_cmd = false;
-            double last_read = ros::Time::now().toSec();
+            double last_read = rclcpp::Clock(RCL_SYSTEM_TIME).now().seconds();
             double delta_time = 0.0;
             bool read_again = true;
-            while (read_again and !complete_cmd)
+
+            while (read_again && !complete_cmd)
             {
-                // Read 1 char and check if is a *\n* or a *\r*
-                last_char = ser.read(1);
-                if (last_char.length() > 0)
+                // Leer un carácter y verificar si es '\n' o '\r'
+		std::vector<uint8_t> buffer(1);  // Crear un buffer de un byte
+		ser.port()->receive(buffer);      // Leer un byte
+		last_char = buffer[0];            // Asignar el byte leído
+
+                if (!last_char.empty())
                 {
                     input_line << last_char;
-                    last_read = ros::Time::now().toSec();
-                    if (last_char == "\n")
-                    {
-                        new_line_char = true;
-                    }
-                    if (last_char == "\r")
-                    {
-                        return_line_char = true;
-                    }
-                    if (new_line_char and return_line_char)
-                    {
-                        complete_cmd = true;
-                    }
+                    last_read = rclcpp::Clock(RCL_SYSTEM_TIME).now().seconds();
+                    if (last_char == "\n") new_line_char = true;
+                    if (last_char == "\r") return_line_char = true;
+                    if (new_line_char && return_line_char) complete_cmd = true;
                 }
 
-                // Calculate the read task duration. If is too much, stop reading from serial
-                delta_time = ros::Time::now().toSec() - last_read;
-                if (delta_time > 0.05)
-                {
-                    //cout << "Too much time to read a char. Stop reading chars\n";
-                    read_again = false;
-                }
-
-                ///////////////////////////////////
-                /*
-                int val = -1;
-                char cc = '_';
-                if(last_char.length() > 0)
-                {
-                    val = (int)last_char.at(0);
-                    if( val != 10)
-                    {
-                        cc = last_char.at(0);
-                    }
-                    if( val == 10)
-                    {
-                        cc = '*';
-                    }
-                    if( val == 13)
-                    {
-                        cc = '~';
-                    }
-                }
-                cout 
-                << "Reading a char from serial: last_char(val) = [" << val 
-                << "], last_char(char) = [" << cc
-                << "], lenght = " << last_char.length()
-                << ", delta = " << delta_time
-                << ", end_line = " << new_line_char
-                << ", return_line = " << return_line_char
-                << ", complete_cmd = " << complete_cmd
-                << "\n";
-                */
-                ///////////////////////////////////
+                // Si la lectura tarda demasiado, se interrumpe
+                delta_time = rclcpp::Clock(RCL_SYSTEM_TIME).now().seconds() - last_read;
+                if (delta_time > 0.05) read_again = false;
             }
+
             input_msg = tools::cleanString(input_line.str());
 
-            // Process String content
-            if (input_msg.length() > 2 and input_msg.at(0) == '<')
+            // Procesar contenido del mensaje
+            if (input_msg.length() > 2 && input_msg.at(0) == '<')
             {
-                // Get vector of strings
-                vector<string> v_args = tools::getArgs(input_msg);
+                std::vector<std::string> v_args = tools::getArgs(input_msg);
 
-                // Get command code
+                // Obtener código de comando
                 int cmd_code = -1;
-                string cmd_code_string = v_args[0].substr(1, v_args[0].length() - 1);
+                std::string cmd_code_string = v_args[0].substr(1, v_args[0].length() - 1);
                 try
                 {
-                    cmd_code = stoi(cmd_code_string);
+                    cmd_code = std::stoi(cmd_code_string);
                 }
-                catch (std::invalid_argument &e)
+                catch (const std::invalid_argument &e)
                 {
-                    ROS_ERROR_STREAM(
-                        "Invalid argument: CMD code = "
-                        << v_args[0]
-                        << ", string = "
-                        << cmd_code_string);
+                    RCLCPP_ERROR(rclcpp::get_logger("serial_node"),
+                                 "Invalid argument: CMD code = %s, string = %s",
+                                 v_args[0].c_str(), cmd_code_string.c_str());
                     cmd_code = -1;
                 }
-                //cout << "Received CMD: Code = " << int(cmd_code) << "\n";
 
-                // Search in CMD Table and send to pointed function
+                // Buscar comando en la tabla y ejecutarlo
                 for (int i = 0; i < cmd_table_size; i++)
                 {
                     if (CMD_Table[i].intCmd == cmd_code)
@@ -592,22 +565,19 @@ void readAndProcessCmd()
                 }
             }
 
-            // Process reset command
+            // Procesar comando de reinicio
             int reset_char_pos = input_msg.find("#");
-            if (reset_char_pos < input_msg.length() - 1)
+            if (reset_char_pos < static_cast<int>(input_msg.length()) - 1)
             {
-                cout << "Received reset command\n";
+                RCLCPP_INFO(rclcpp::get_logger("serial_node"), "Received reset command");
                 board_status = DISCONNECTED;
                 configSerialCommunication();
             }
-
-            //cout << "Received CMD = " << input_msg << "\n";
-
-        } // End of "if(ser.available())"
+        }
     }
-    catch (serial::SerialException &e)
+    catch (const std::exception &e)
     {
-        ROS_ERROR("%s", e.what());
+        RCLCPP_ERROR(rclcpp::get_logger("serial_node"), "%s", e.what());
         exit(2);
     }
 }
@@ -618,100 +588,77 @@ void readAndProcessCmd()
  * @param args String with the IMU values
  * @return Integer, -1 if messsage is wrong
  */
-int CMD_IMUMessage(vector<string> args)
+int CMD_IMUMessage(std::vector<std::string> args)
 {
     int channels = 3 + 3 + 3 + 4;
-    //vector<string> vdata = get_args(args);
+
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM("IMU: Error with received data size " << args.size());
+        RCLCPP_INFO(rclcpp::get_logger("imu_logger"), "IMU: Error with received data size %zu", args.size());
         return -1;
     }
 
-    //ROS_INFO("IMU: Correct data");
     double data[channels];
     for (int i = 0; i < channels; i++)
     {
-        data[i] = stod(args.at(i + 1));
-        //ROS_INFO("IMU[%i] = %f", i, data[i-1]);
+        data[i] = std::stod(args.at(i + 1));
     }
 
-    // Linear acceleration: data arrives in g units and needs to be in m/s^2
-    Accel accel;
+    // Linear acceleration: convert g to m/s^2
+    geometry_msgs::msg::Vector3 accel;
     accel.x = data[0] * SENSORS_GRAVITY_EARTH;
     accel.y = data[1] * SENSORS_GRAVITY_EARTH;
     accel.z = data[2] * SENSORS_GRAVITY_EARTH;
 
-    // Angular velocity: data arrives in DPS and needs to be in rad/s
-    Gyro gyro;
+    // Angular velocity: convert DPS to rad/s
+    geometry_msgs::msg::Vector3 gyro;
     gyro.x = data[3] * SENSORS_DPS_TO_RADS;
     gyro.y = data[4] * SENSORS_DPS_TO_RADS;
     gyro.z = data[5] * SENSORS_DPS_TO_RADS;
 
-    // Magnetic field: Data arrives in uT: needs to be in T (Tesla)
-    // Frame is in NED convention (x = North, y = East, z = Down)
-    // Transforming to ENU (x = East, y = North, z = Up)
-    MagField mag_field;
+    // Magnetic field: convert uT to T and transform from NED to ENU
+    geometry_msgs::msg::Vector3 mag_field;
     mag_field.x = data[7] * SENSORS_MICROTESLA_TO_TESLA;
     mag_field.y = data[6] * SENSORS_MICROTESLA_TO_TESLA;
     mag_field.z = data[8] * -SENSORS_MICROTESLA_TO_TESLA;
 
     // Orientation in quaternion format
-    QPose qpose;
+    geometry_msgs::msg::Quaternion qpose;
     qpose.x = data[9];
     qpose.y = data[10];
     qpose.z = data[11];
     qpose.w = data[12];
 
     // IMU Message
-    sensor_msgs::Imu imu_msg;
+    sensor_msgs::msg::Imu imu_msg;
     imu_msg.header.frame_id = "imu_link";
-    imu_msg.header.stamp = ros::Time::now();
+    imu_msg.header.stamp = rclcpp::Clock().now();
     imu_msg.orientation_covariance = {0.0025, 0, 0, 0, 0.0025, 0, 0, 0, 0.0025};
     imu_msg.angular_velocity_covariance = {0.0025, 0, 0, 0, 0.0025, 0, 0, 0, 0.0025};
     imu_msg.linear_acceleration_covariance = {0.0025, 0, 0, 0, 0.0025, 0, 0, 0, 0.0025};
 
-    imu_msg.linear_acceleration.x = accel.x;
-    imu_msg.linear_acceleration.y = accel.y;
-    imu_msg.linear_acceleration.z = accel.z;
-
-    imu_msg.angular_velocity.x = gyro.x;
-    imu_msg.angular_velocity.y = gyro.y;
-    imu_msg.angular_velocity.z = gyro.z;
-
-    imu_msg.orientation.x = qpose.x;
-    imu_msg.orientation.y = qpose.y;
-    imu_msg.orientation.z = qpose.z;
-    imu_msg.orientation.w = qpose.w;
+    imu_msg.linear_acceleration = accel;
+    imu_msg.angular_velocity = gyro;
+    imu_msg.orientation = qpose;
 
     // Magnetic Field Message
-    sensor_msgs::MagneticField mg_msg;
-    mg_msg.header.stamp = ros::Time::now();
+    sensor_msgs::msg::MagneticField mg_msg;
+    mg_msg.header.stamp = rclcpp::Clock().now();
     mg_msg.header.frame_id = "imu_link";
-    mg_msg.magnetic_field.x = mag_field.x;
-    mg_msg.magnetic_field.y = mag_field.y;
-    mg_msg.magnetic_field.z = mag_field.z;
+    mg_msg.magnetic_field = mag_field;
     mg_msg.magnetic_field_covariance[0] = 0;
 
     // IMU Raw Message
-    sdv_msgs::ImuRaw imu_raw_msg;
-    imu_raw_msg.header.stamp = ros::Time::now();
-    imu_raw_msg.linear_acceleration.x = accel.x;
-    imu_raw_msg.linear_acceleration.y = accel.y;
-    imu_raw_msg.linear_acceleration.z = accel.z;
-
-    imu_raw_msg.angular_velocity.x = gyro.x;
-    imu_raw_msg.angular_velocity.y = gyro.y;
-    imu_raw_msg.angular_velocity.z = gyro.z;
-
-    imu_raw_msg.magnetic_field.x = mag_field.x;
-    imu_raw_msg.magnetic_field.y = mag_field.y;
-    imu_raw_msg.magnetic_field.z = mag_field.z;
+    sdv_msgs::msg::ImuRaw imu_raw_msg;
+    imu_raw_msg.header.stamp = rclcpp::Clock().now();
+    imu_raw_msg.linear_acceleration = accel;
+    imu_raw_msg.angular_velocity = gyro;
+    imu_raw_msg.magnetic_field = mag_field;
 
     // Publish messages
-    imu_pub.publish(imu_msg);
-    mag_pub.publish(mg_msg);
-    imu_raw_pub.publish(imu_raw_msg);
+    imu_pub->publish(imu_msg);
+    mag_pub->publish(mg_msg);
+    imu_raw_pub->publish(imu_raw_msg);
 
     return 1;
 }
@@ -722,10 +669,10 @@ int CMD_IMUMessage(vector<string> args)
  * @param args String with the SA message values
  * @return Integer, -1 if messsage is wrong
  */
-int CMD_SAMessage(vector<string> args)
+ int CMD_SAMessage(std::vector<std::string> args)
 {
     // Get Time Stamp of arrived message
-    last_sa_msg_time_stamp = ros::Time::now().toSec();
+    last_sa_msg_time_stamp = rclcpp::Clock().now().seconds();
 
     // Change board status
     if (board_status == JUST_CONNECTED)
@@ -734,26 +681,24 @@ int CMD_SAMessage(vector<string> args)
     }
 
     // Push a message in buffer
-    string msg = "sk\r";
+    std::string msg = "sk\r";
     buffer_callback.insert(buffer_callback.begin(), msg);
 
     return 1;
 }
-
 /**
  * Process a message that contains a Flexiforce data from the board.
  * 
  * @param args String with the Flexiforce message values
  * @return Integer, -1 if messsage is wrong
  */
-int CMD_FlexiforceMessage(vector<string> args)
+int CMD_FlexiforceMessage(std::vector<std::string> args)
 {
     // String to vector
-    //vector<string> vdata = get_args(args);
     int channels = 4;
-    if (args.size() != channels + 1) // 5 diferent values
+    if (args.size() != channels + 1) // 5 different values
     {
-        ROS_INFO_STREAM("Flexiforce: Error with received data size " << args.size());
+        RCLCPP_INFO(rclcpp::get_logger("flexiforce"), "Flexiforce: Error with received data size %zu", args.size());
         return -1;
     }
 
@@ -761,12 +706,12 @@ int CMD_FlexiforceMessage(vector<string> args)
     double data[channels];
     for (int i = 0; i < channels; i++)
     {
-        data[i] = stod(args.at(i + 1));
+        data[i] = std::stod(args.at(i + 1));
     }
 
     // Init ROS message
-    sdv_msgs::Flexiforce flx_msg;
-    flx_msg.header.stamp = ros::Time::now();
+    sdv_msgs::msg::Flexiforce flx_msg;
+    flx_msg.header.stamp = rclcpp::Clock().now();
 
     flx_msg.front_left = data[0];
     flx_msg.front_right = data[1];
@@ -774,7 +719,7 @@ int CMD_FlexiforceMessage(vector<string> args)
     flx_msg.back_right = data[3];
 
     // Publish
-    flexiforce_pub.publish(flx_msg);
+    flexiforce_pub->publish(flx_msg);
 
     return 1;
 }
@@ -783,28 +728,28 @@ int CMD_FlexiforceMessage(vector<string> args)
  * Process a message that contains a PanelButton data from the board.
  * 
  * @param args String with the PanelButton message values
- * @return Integer, -1 if messsage is wrong
+ * @return Integer, -1 if message is wrong
  */
-int CMD_PanelButtonMessage(vector<string> args)
+int CMD_PanelButtonMessage(std::vector<std::string> args)
 {
     // Check size of vector
     int channels = 1;
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM("CMD_PanelButtonMessage: Error with received data size " << args.size());
+        RCLCPP_INFO(rclcpp::get_logger("panel_button"), "CMD_PanelButtonMessage: Error with received data size %zu", args.size());
         return -1;
     }
 
     // Get data from string message
-    uint8_t data = stod(args.at(1));
+    uint8_t data = std::stoi(args.at(1));
 
     // Init ROS message
-    sdv_msgs::PanelButton button_msg;
-    button_msg.header.stamp = ros::Time::now();
+    sdv_msgs::msg::PanelButton button_msg;
+    button_msg.header.stamp = rclcpp::Clock().now();
     button_msg.status = data;
 
     // Publish
-    panel_button_pub.publish(button_msg);
+    panel_button_pub->publish(button_msg);
     return 1;
 }
 
@@ -812,45 +757,44 @@ int CMD_PanelButtonMessage(vector<string> args)
  * Process a message that contains the Batteries data.
  * 
  * @param args String with the Batteries message values
- * @return Integer, -1 if messsage is wrong
+ * @return Integer, -1 if message is wrong
  */
-int CMD_BatteryMessage(vector<string> args)
+int CMD_BatteryMessage(std::vector<std::string> args)
 {
     // Get first two arguments
     int n_batteries = 0;
     int n_cells = 0;
     if (args.size() > 3)
     {
-        n_batteries = stod(args.at(1));
-        n_cells = stod(args.at(2));
+        n_batteries = std::stoi(args.at(1));
+        n_cells = std::stoi(args.at(2));
     }
 
     // Check size of vector
     int channels = (n_batteries * n_cells) + 2;
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM("CMD_BatteryMessage: Error with received data size " << args.size());
+        RCLCPP_INFO(rclcpp::get_logger("battery"), "CMD_BatteryMessage: Error with received data size %zu", args.size());
         return -1;
     }
 
     // Get data from string message
-    double data[channels];
+    std::vector<double> data(channels);
     for (int i = 0; i < channels; i++)
     {
-        data[i] = stod(args.at(i + 1));
-        //cout << "  " << data[i] << "\n\r";
+        data[i] = std::stod(args.at(i + 1));
     }
 
     // Set ROS message
-    sdv_msgs::Batteries batteries_msg;
-    batteries_msg.header.stamp = ros::Time::now();
+    sdv_msgs::msg::Batteries batteries_msg;
+    batteries_msg.header.stamp = rclcpp::Clock().now();
+
     int counter = 0;
-    for(int i = 0; i < n_batteries; i++)
+    for (int i = 0; i < n_batteries; i++)
     {
-        sdv_msgs::Battery battery;
-        string name = "Battery " + to_string(i + 1);
-        battery.name = name;
-        for(int j = 0; j < n_cells; j++)
+        sdv_msgs::msg::Battery battery;
+        battery.name = "Battery " + std::to_string(i + 1);
+        for (int j = 0; j < n_cells; j++)
         {
             battery.cell_voltages.push_back(data[counter + 2]);
             counter++;
@@ -859,45 +803,40 @@ int CMD_BatteryMessage(vector<string> args)
     }
 
     // Publish
-    batteries_pub.publish(batteries_msg);
+    batteries_pub->publish(batteries_msg);
     
     return 1;
 }
-
 /**
  * Process a message that contains the Driver Status data.
  * 
  * @param args String with the Driver Status message values
- * @return Integer, -1 if messsage is wrong
+ * @return Integer, -1 if message is wrong
  */
-int CMD_DriverStatusMessage(vector<string> args)
+int CMD_DriverStatusMessage(std::vector<std::string> args)
 {
     // Get first two arguments
     int motor_model = MotorModel::NONE;
     int n_drivers = 0;
     if (args.size() > 3)
     {
-        motor_model = stod(args.at(1));
-        n_drivers = stod(args.at(2));
+        motor_model = std::stoi(args.at(1));
+        n_drivers = std::stoi(args.at(2));
     }
 
     // Check size of vector.
     int channels = 0;
     int driver_fields = 0;
-    string motor_names[4];
+    std::array<std::string, 4> motor_names;
     switch (motor_model)
     {
     case MotorModel::POLOLU:
         driver_fields = 3;
-        motor_names[0] = "back_left";
-        motor_names[1] = "back_right";
-        motor_names[2] = "front_left";
-        motor_names[3] = "front_right";
+        motor_names = {"back_left", "back_right", "front_left", "front_right"};
         break;
     case MotorModel::ESCON:
         driver_fields = 1;
-        motor_names[0] = "left";
-        motor_names[1] = "right";
+        motor_names = {"left", "right", "", ""}; // Evita valores no definidos
         break;
     default:
         break;
@@ -906,43 +845,43 @@ int CMD_DriverStatusMessage(vector<string> args)
     
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM(
-            "CMD_DriverStatusMessage: Error with received data size. current = " 
-            << channels
-            << ", required = "
-            << args.size() 
-            );
+        RCLCPP_INFO(
+            rclcpp::get_logger("driver_status"),
+            "CMD_DriverStatusMessage: Error with received data size. current = %d, required = %zu",
+            channels, args.size()
+        );
         return -1;
     }
 
     // Get data from string message
-    double data[channels];
+    std::vector<double> data(channels);
     for (int i = 0; i < channels; i++)
     {
-        data[i] = stod(args.at(i + 1));
+        data[i] = std::stod(args.at(i + 1));
     }
 
     // Set ROS message
-    sdv_msgs::Drivers motors_msg;
-    motors_msg.header.stamp = ros::Time::now();
+    sdv_msgs::msg::Drivers motors_msg;
+    motors_msg.header.stamp = rclcpp::Clock().now();
+    
     int counter = 0;
-    for(int i = 0; i < n_drivers; i++)
+    for (int i = 0; i < n_drivers; i++)
     {
         // Set current value
-        sdv_msgs::MotorDriver m_msg;
+        sdv_msgs::msg::MotorDriver m_msg;
         m_msg.name = motor_names[i];
-        m_msg.driver_status = sdv_msgs::MotorDriver::UNKNOWN;
+        m_msg.driver_status = sdv_msgs::msg::MotorDriver::UNKNOWN;
         m_msg.current = data[counter + 2];
 
         // Set driver status
-        if(motor_model == MotorModel::POLOLU)
+        if (motor_model == MotorModel::POLOLU)
         {
             bool half_bridge_a = data[counter + 3];
             bool half_bridge_b = data[counter + 4];
-            if(!half_bridge_a or !half_bridge_b)
-                m_msg.driver_status = sdv_msgs::MotorDriver::DAMAGED;
+            if (!half_bridge_a || !half_bridge_b)
+                m_msg.driver_status = sdv_msgs::msg::MotorDriver::DAMAGED;
             else
-                m_msg.driver_status = sdv_msgs::MotorDriver::CORRECT;
+                m_msg.driver_status = sdv_msgs::msg::MotorDriver::CORRECT;
             counter += 2;
         }
         counter++;
@@ -952,134 +891,130 @@ int CMD_DriverStatusMessage(vector<string> args)
     }
 
     // Publish
-    motor_status_pub.publish(motors_msg);
+    motor_status_pub->publish(motors_msg);
     
     return 1;
 }
-
 /**
  * Process a message that contains the Odometry data.
  * 
  * @param args String with the Odometry message values
- * @return Integer, -1 if messsage is wrong
+ * @return Integer, -1 if message is wrong
  */
-int CMD_OdometryMessage(vector<string> args)
+int CMD_OdometryMessage(std::vector<std::string> args)
 {
     // Check size of vector
     int channels = n_motors;
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM("CMD_OdometryMessage: Error with received data size " << args.size());
+        RCLCPP_INFO(
+            rclcpp::get_logger("odometry"),
+            "CMD_OdometryMessage: Error with received data size %zu", 
+            args.size()
+        );
         return -1;
     }
 
     // Get data from string message
-    double data[channels];
+    std::vector<double> data(channels);
     for (int i = 0; i < channels; i++)
     {
-        data[i] = stod(args.at(i + 1));
+        data[i] = std::stod(args.at(i + 1));
     }
 
-    // Motor drive type: diferential
-    if(motor_drive_type == "diferential")
+    // Motor drive type: differential
+    if (motor_drive_type == "differential")
     {
-        two_drive_controller.setActualSpeeds(data);
+        two_drive_controller.setActualSpeeds(data.data());
         two_drive_controller.publishMotorActualSpeeds();
     }
 
     // Motor drive type: mecanum
-    if(motor_drive_type == "mecanum")
+    if (motor_drive_type == "mecanum")
     {
-        four_drive_controller.setActualSpeeds(data);
+        four_drive_controller.setActualSpeeds(data.data());
         four_drive_controller.publishMotorActualSpeeds();
     }
 
     return 1;
 }
-
 /**
  * Process a message that contains the Ultrasound data.
  * 
- * @param args String with the Odometry message values
- * @return Integer, -1 if messsage is wrong
+ * @param args String with the Ultrasound message values
+ * @return Integer, -1 if message is wrong
  */
-int CMD_UltrasoundMessage(vector<string> args)
+int CMD_UltrasoundMessage(std::vector<std::string> args)
 {
     // Check size of vector
-    int channels = 6;
+    constexpr int channels = 6;
     if (args.size() != channels + 1)
     {
-        ROS_INFO_STREAM("CMD_UltrasoundMessage: Error with received data size " << args.size());
+        RCLCPP_INFO(
+            rclcpp::get_logger("ultrasound"),
+            "CMD_UltrasoundMessage: Error with received data size %zu", 
+            args.size()
+        );
         return -1;
     }
 
     // Get data from string message
-    double data[channels];
+    std::vector<double> data(channels);
     for (int i = 0; i < channels; i++) 
-        data[i] = stod(args.at(i + 1));
+        data[i] = std::stod(args.at(i + 1));
     
-    // Set ROS message
-    sdv_msgs::Ultrasound ultrasound_msg;
-    ultrasound_msg.header.stamp = ros::Time::now();
-    for (int i = 0; i < 6; i++)
-        ultrasound_msg.sensors.push_back(data[i]);
+    // Set ROS 2 message
+    auto ultrasound_msg = std::make_shared<sdv_msgs::msg::Ultrasound>();
+    ultrasound_msg->header.stamp = rclcpp::Clock().now();
+    ultrasound_msg->sensors.assign(data.begin(), data.end());
     
     // Publish
-    ultrasound_pub.publish(ultrasound_msg);
+    ultrasound_pub->publish(*ultrasound_msg);
 
     return 1;
 }
-
 /**
- * Empty functión, used to create and test *pfnCmdLine* functions
+ * Empty function, used to create and test *pfnCmdLine* functions
  * 
  * @param args String with Tiva data
- * @return Integer, -1 if messsage is wrong
+ * @return Integer, -1 if message is wrong
  */
-int CMD_EmptyFunction(vector<string> args)
+int CMD_EmptyFunction(std::vector<std::string> args)
 {
-    ROS_INFO("CMD_EmptyFunction: TO-DO.");
+    RCLCPP_INFO(rclcpp::get_logger("empty_function"), "CMD_EmptyFunction: TO-DO.");
     return 1;
 }
-
 /**
  * main
  */
 int main(int argc, char **argv)
 {
-    // Configuring node
-    ros::init(argc, argv, "sdv_serial_node");
-    ros::NodeHandle nh("~");
+    // Initialize ROS 2
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("sdv_serial_node");
 
     // Reading ROS parameter: port
-    if (ros::param::has("/sdv/board_port"))
+    if (node->has_parameter("sdv.board_port"))
     {
-        nh.getParam("/sdv/board_port", port);
-        ROS_INFO_STREAM("Got port value from ROS parameter: " << port);
+        node->get_parameter("sdv.board_port", port);
+        RCLCPP_INFO(node->get_logger(), "Got port value from ROS parameter: %s", port.c_str());
     }
 
     // Reading ROS parameter: baudrate
-    if (ros::param::has("/sdv/board_baudrate"))
+    if (node->has_parameter("sdv.board_baudrate"))
     {
-        nh.getParam("/sdv/board_baudrate", baudrate);
-        ROS_INFO_STREAM("Got baudrate value from ROS parameter: " << baudrate);
-    }
-
-    // Reading ROS parameter: port
-    if (ros::param::has("/sdv/board_port"))
-    {
-        nh.getParam("/sdv/board_port", port);
-        ROS_INFO_STREAM("Got port value from ROS parameter: " << port);
+        node->get_parameter("sdv.board_baudrate", baudrate);
+        RCLCPP_INFO(node->get_logger(), "Got baudrate value from ROS parameter: %d", baudrate);
     }
 
     // Reading ROS parameter: wheel_separation
-    if (ros::param::has("/sdv/wheel_separation"))
+    if (node->has_parameter("sdv.wheel_separation"))
     {
         double separation;
-        nh.getParam("/sdv/wheel_separation", separation);
+        node->get_parameter("sdv.wheel_separation", separation);
         if (separation != 0.0)
         {
-            ROS_INFO_STREAM("Got '/sdv/wheel_separation' from ROS parameters: " << separation);
+            RCLCPP_INFO(node->get_logger(), "Got 'sdv.wheel_separation' from ROS parameters: %f", separation);
             B = separation;
             two_drive_controller.setWheelSeparation(separation);
             four_drive_controller.setWheelSeparation(separation);
@@ -1087,13 +1022,13 @@ int main(int argc, char **argv)
     }
 
     // Reading ROS parameter: wheel_axis_separation
-    if (ros::param::has("/sdv/wheel_separation"))
+    if (node->has_parameter("sdv.wheel_axis_separation"))
     {
         double separation;
-        nh.getParam("/sdv/wheel_axis_separation", separation);
+        node->get_parameter("sdv.wheel_axis_separation", separation);
         if (separation != 0.0)
         {
-            ROS_INFO_STREAM("Got '/sdv/wheel_axis_separation' from ROS parameters: " << separation);
+            RCLCPP_INFO(node->get_logger(), "Got 'sdv.wheel_axis_separation' from ROS parameters: %f", separation);
             B = separation;
             two_drive_controller.setAxisWheelSeparation(separation);
             four_drive_controller.setAxisWheelSeparation(separation);
@@ -1101,119 +1036,120 @@ int main(int argc, char **argv)
     }
 
     // Reading ROS parameter: motor drive type
-    if (ros::param::has("/sdv/motor_drive_type"))
+    if (node->has_parameter("sdv.motor_drive_type"))
     {
-        nh.getParam("/sdv/motor_drive_type", motor_drive_type);
+        node->get_parameter("sdv.motor_drive_type", motor_drive_type);
         if(motor_drive_type == "diferential")
             n_motors = 2;
         if(motor_drive_type == "mecanum")
             n_motors = 4;
-        ROS_INFO_STREAM("Got motor drive type value from ROS parameter: " << motor_drive_type);
+        RCLCPP_INFO(node->get_logger(), "Got motor drive type value from ROS parameter: %s", motor_drive_type.c_str());
     }
 
     // Subscribing to topics
-    ros::Subscriber move_motors_sub = nh.subscribe("/mobile_base/commands/velocity", 20, moveMotorsCallback);
-    ros::Subscriber led_sub = nh.subscribe("/led", 20, ledCallback);
-    ros::Subscriber buzzer_sub = nh.subscribe("/buzzer", 20, buzzerCallback);
-    ros::Subscriber super_buzzer_sub = nh.subscribe("/super_buzzer", 20, superBuzzerCallback);
+    auto move_motors_sub = node->create_subscription<geometry_msgs::msg::Twist>(
+        "/mobile_base/commands/velocity", 20, moveMotorsCallback);
+    auto led_sub = node->create_subscription<sdv_msgs::msg::LED>("/led", 20, ledCallback);
+
+    auto buzzer_sub = node->create_subscription<sdv_msgs::msg::Buzzer>("/buzzer", 20, buzzerCallback);
+    auto super_buzzer_sub = node->create_subscription<sdv_msgs::msg::Buzzer>("/super_buzzer", 20, superBuzzerCallback);
 
     // Publishers
-    encoder_pub = nh.advertise<sdv_msgs::Encoder>("/encoder", 20);
-    sdv_status_pub = nh.advertise<sdv_msgs::SdvStatus>("/sdv_status", 20);
-    ultrasound_pub = nh.advertise<sdv_msgs::Ultrasound>("/ultrasound", 20);
-    flexiforce_pub = nh.advertise<sdv_msgs::Flexiforce>("/flexiforce", 20);
-    batteries_pub = nh.advertise<sdv_msgs::Batteries>("/batteries", 20);
-    tag_rfid_pub = nh.advertise<sdv_msgs::TagRfid>("/read_tag_rfid", 20);
-    imu_raw_pub = nh.advertise<sdv_msgs::ImuRaw>("/imu_raw", 20);
-    panel_button_pub = nh.advertise<sdv_msgs::PanelButton>("/panel_button", 20);
-    motor_status_pub = nh.advertise<sdv_msgs::Drivers>("/motors/drivers", 20);
-    mag_pub = nh.advertise<sensor_msgs::MagneticField>("/imu/mag", 20);
-    imu_pub = nh.advertise<sensor_msgs::Imu>("/imu/data_raw", 20);
+    encoder_pub = node->create_publisher<sdv_msgs::msg::Encoder>("/encoder", 20);
+    sdv_status_pub = node->create_publisher<sdv_msgs::msg::SdvStatus>("/sdv_status", 20);
+    ultrasound_pub = node->create_publisher<sdv_msgs::msg::Ultrasound>("/ultrasound", 20);
+    flexiforce_pub = node->create_publisher<sdv_msgs::msg::Flexiforce>("/flexiforce", 20);
+    batteries_pub = node->create_publisher<sdv_msgs::msg::Batteries>("/batteries", 20);
+    tag_rfid_pub = node->create_publisher<sdv_msgs::msg::TagRfid>("/read_tag_rfid", 20);
+    imu_raw_pub = node->create_publisher<sdv_msgs::msg::ImuRaw>("/imu_raw", 20);
+    panel_button_pub = node->create_publisher<sdv_msgs::msg::PanelButton>("/panel_button", 20);
+    motor_status_pub = node->create_publisher<sdv_msgs::msg::Drivers>("/motors/drivers", 20);
+    mag_pub = node->create_publisher<sensor_msgs::msg::MagneticField>("/imu/mag", 20);
+    imu_pub = node->create_publisher<sensor_msgs::msg::Imu>("/imu/data_raw", 20);
 
-    two_drive_controller.setNodeHandle(&nh);
-    four_drive_controller.setNodeHandle(&nh);
+    two_drive_controller.setNodeHandle(node);
+    four_drive_controller.setNodeHandle(node);
 
     // Opening serial port
     if (openSerialPort(port) == -1)
     {
-        ROS_ERROR("Error opening port. Exit from sdv_serial_node.");
+        RCLCPP_ERROR(node->get_logger(), "Error opening port. Exit from sdv_serial_node.");
         return -1;
     }
 
-    if (ser.isOpen())
+    if (ser.port()->is_open())
     {
-        ROS_INFO_STREAM("Serial Port initialized --> " << ser.getPort());
+        RCLCPP_INFO(node->get_logger(), "Serial Port initialized --> %s", ser.port()->device_name().c_str());
     }
     else
     {
-        ROS_ERROR_STREAM("Unable to open port: " << ser.getPort());
+        RCLCPP_ERROR(node->get_logger(), "Unable to open port: %s", ser.port()->device_name().c_str());
         return -1;
     }
 
-    // Configuring ROS loop rate
-    ros::Rate loop_rate(500);
+    // ROS loop rate
+    rclcpp::Rate loop_rate(500);
 
     // Some variables...
     int i_cmd = 0;
-    string line_start;
+    std::string line_start;
 
     // ROS Loop
-    while (ros::ok())
+    while (rclcpp::ok())
     {
         // Start serial communication
         if (board_status == DISCONNECTED)
         {
             configSerialCommunication();
-            ROS_INFO("sdv_serial_node entering in ROS loop");
+            RCLCPP_INFO(node->get_logger(), "sdv_serial_node entering in ROS loop");
         }
 
         readAndProcessCmd();
 
         // If buffer is not empty, write messages in serial port
-        if (buffer_callback.size() > 0 and board_status == OK)
+        if (!buffer_callback.empty() && board_status == OK)
         {
             // Get element from vector
-            string msg = buffer_callback.back();
+            std::string msg = buffer_callback.back();
 
-            // Check that is readable
-            if (msg.find("rt") != string::npos)
+            // Check that it's readable
+            if (msg.find("rt") != std::string::npos)
             {
-                ROS_INFO("Not complete msg...");
+                RCLCPP_INFO(node->get_logger(), "Not complete msg...");
             }
             else // Write message in serial output
             {
-                ser.write(msg);
-                ser.flushOutput();
+                //ser.write(msg);
+                sendMessage(msg);
                 buffer_callback.pop_back();
-                //ROS_INFO_STREAM("Writing serial port --> " << msg);
             }
         }
 
         // Check last SA Stamp Time and change board status
-        double now = ros::Time::now().toSec();
-        //double d = ros::Time::now().toSec() - last_sa_msg_time_stamp;
+        double now = node->now().seconds();
         double d = now - last_sa_msg_time_stamp;
-        if (board_status == OK)
+
+        if (board_status == OK && d > 3.0)
         {
-            if (d > 3.0)
-            {
-                ROS_ERROR("Board is not sending Still Alive Messages. Changing status to LOCKED");
-                board_status = LOCKED;
-            }
+            RCLCPP_ERROR(node->get_logger(), "Board is not sending Still Alive Messages. Changing status to LOCKED");
+            board_status = LOCKED;
         }
-        //cout << "Board Status = " << board_status << " , now = " << now << ", last = " << last_sa_msg_time_stamp << ", delta = " << d << "\n";
 
         // If board is locked due to a reset, try to reconfigure it
         if (board_status == LOCKED)
         {
-            ROS_INFO("Board in locked status. Trying to reset.");
+            RCLCPP_INFO(node->get_logger(), "Board in locked status. Trying to reset.");
             configSerialCommunication();
-            ROS_INFO("sdv_serial_node entering in ROS loop");
+            RCLCPP_INFO(node->get_logger(), "sdv_serial_node entering in ROS loop");
         }
 
         // Spin
-        ros::spinOnce();
+        rclcpp::spin_some(node);
         loop_rate.sleep();
+    }
 
-    } // End of ROS Loop
-} // End of main function
+    rclcpp::shutdown();
+    return 0;
+}
+
+

@@ -1,18 +1,27 @@
 <?xml version="1.0"?>
-<package format="2">
-  <name>sdv_platform</name>
-  <version>0.0.0</version>
-  <description>The sdv_platform package</description>
-  <maintainer email="jhangaritamo@unal.edu.co">Jhonyfer Angarita Moreno</maintainer>
-  <license>BSD</license>
+<package format="3">
+  <name>camera_platform</name>
+  <version>0.0.1</version>
+  <description>
+    A package to manage camera platform operations such as capturing images and displaying them.
+  </description>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>rospy</build_depend>
+  <maintainer email="your_email@example.com">Your Name</maintainer>
   
-  <build_export_depend>rospy</build_export_depend>
+  <license>Apache 2.0</license>
 
-  <exec_depend>rospy</exec_depend>
+  <!-- Build and Exec Dependencies -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  
+  <!-- Dependencies for runtime -->
+  <exec_depend>opencv</exec_depend>
 
-  <export>
-  </export>
+  <!-- Testing dependencies (optional) -->
+  <!-- <test_depend>ament_lint</test_depend> -->
+  <!-- <test_depend>ament_lint_common</test_depend> -->
+
 </package>
+

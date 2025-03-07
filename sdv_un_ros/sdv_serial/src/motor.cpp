@@ -1,12 +1,9 @@
-#include <math.h>
+#include <cmath>
 #include <iostream>
-#include <ros/ros.h>
-
+#include <rclcpp/rclcpp.hpp>
 #include <motor/motor.h>
-#include <sdv_msgs/TwoMotors.h>
-#include <sdv_msgs/FourMotors.h>
-
-using namespace std;
+#include "sdv_msgs/msg/two_motors.hpp"
+#include "sdv_msgs/msg/four_motors.hpp"
 
 Motor::Motor(double r, bool right_motor)
 {
@@ -38,7 +35,7 @@ double Motor::getPwmPercent(double x, double z)
     else
         w_rad_s = 80.0 * w_rad_s / N - 10.0;
 
-    last_speed_time_stamp = ros::Time::now().toSec();
+    last_speed_time_stamp = rclcpp::Clock().now().seconds();  // Migrado desde ROS 1
     return w_rad_s;
 }
 
@@ -59,10 +56,7 @@ void Motor::setAxisWheelSeparation(double sep)
 
 double Motor::motorPosition()
 {
-    if (is_right_motor)
-        return 1.0;
-    else
-        return -1.0;
+    return is_right_motor ? 1.0 : -1.0;
 }
 
 void Motor::setRightMotor(bool right_motor)
@@ -72,12 +66,12 @@ void Motor::setRightMotor(bool right_motor)
 
 void Motor::setRefSpeed(double speed_rps)
 {
-    Motor::ref_speed_rps = speed_rps;
+    ref_speed_rps = speed_rps;
 }
 
 void Motor::setActualSpeed(double speed_rps)
 {
-    Motor::actual_speed_rps = speed_rps;
+    actual_speed_rps = speed_rps;
 }
 
 double Motor::getRefSpeedRps()
@@ -89,3 +83,4 @@ double Motor::getActualSpeedRps()
 {
     return actual_speed_rps;
 }
+

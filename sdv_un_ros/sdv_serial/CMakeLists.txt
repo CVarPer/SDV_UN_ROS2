@@ -1,53 +1,58 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.28)
 project(sdv_serial)
 
-add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(
-  catkin REQUIRED 
-  COMPONENTS
-    roscpp
-    serial
-    sdv_msgs
+find_package(PkgConfig REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rosbag2_cpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(serial_driver REQUIRED)
+find_package(sdv_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)  # Agregado para Eigen
+
+# Declarar el ejecutable
+add_executable(sdv_serial_node
+  src/sdv_serial_node.cpp
+  src/motor.cpp
+  src/tools.cpp
+  src/two_drive_controller.cpp
+  src/four_drive_controller.cpp
 )
 
-find_package(Eigen3 REQUIRED)
-
-catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS
-    std_msgs
-    sensor_msgs
-    geometry_msgs
-    sdv_msgs
+# Incluir directorios
+target_include_directories(sdv_serial_node PRIVATE
+  include
+  include/motor 
+  ${EIGEN3_INCLUDE_DIR}  # Agregado para incluir Eigen
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp>
+  $<INSTALL_INTERFACE:include>
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
-
-## sdv_serial_node
-add_executable(
-  sdv_serial_node 
-    src/sdv_serial_node.cpp 
-    src/motor.cpp
-    src/two_drive_controller.cpp
-    src/four_drive_controller.cpp
-    src/tools.cpp
+# Definir dependencias del ejecutable
+ament_target_dependencies(sdv_serial_node
+  rclcpp  
+  std_msgs 
+  sensor_msgs 
+  geometry_msgs
+  serial_driver
+  sdv_msgs
 )
-target_link_libraries(sdv_serial_node ${catkin_LIBRARIES})
-add_dependencies(sdv_serial_node sdv_msgs_generate_messages_cpp)
 
-add_executable(
-  eigen_test_node 
-    src/eigen_test.cpp
+# Instalar el ejecutable
+install(TARGETS sdv_serial_node
+  DESTINATION lib/${PROJECT_NAME}
 )
-target_link_libraries(eigen_test_node ${catkin_LIBRARIES})
-add_dependencies(eigen_test_node sdv_msgs_generate_messages_cpp)
 
-add_executable(
-  args_test_node
-    src/args_test.cpp 
-    src/tools.cpp
+# Instalar archivos de encabezado
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
-target_link_libraries(args_test_node ${catkin_LIBRARIES})
+
+ament_package()
+

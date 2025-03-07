@@ -2,40 +2,43 @@
 # -*- coding: utf-8 -*-
 
 '''
-This node takes a image from platform camera and saves it in a png file in the 
+This node takes an image from platform camera and saves it in a png file in the 
 current working directory.
 '''
 
-import rospy
-import cv2
-import cv_bridge
-import numpy
+import rclpy
+from rclpy.node import Node
 from sensor_msgs.msg import Image
+import cv2
+from cv_bridge import CvBridge
 
-camera_topic = '/camera/rgb/image_rect_color'
-image_sub = None
+class CaptureImage(Node):
+    def __init__(self):
+        super().__init__('platform_watcher')
+        self.camera_topic = self.declare_parameter('platform_camera_topic', '/camera/rgb/image_rect_color').value
+        self.bridge = CvBridge()
+        self.image_sub = self.create_subscription(
+            Image,
+            self.camera_topic,
+            self.image_callback,
+            10
+        )
 
-def fetch_param(name, default):
-    if rospy.has_param(name):
-        print("Parameter {} defined. Setting to {}".format(name, rospy.get_param(name)))
-        return rospy.get_param(name)
-    else:
-        print("Parameter {} not defined. Defaulting to {}".format(name, default))
-        return default
+    def image_callback(self, msg):
+        # Convert the ROS Image message to an OpenCV image
+        image = self.bridge.imgmsg_to_cv2(msg)
+        # Convert BGR to RGB
+        rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # Save the image as PNG
+        cv2.imwrite('capture.png', rgb)
+        self.get_logger().info('Capture saved in a file named "capture.png". Exiting.')
+        rclpy.shutdown()
 
-def image_callback(msg):
-    global image_sub
-    bridge = cv_bridge.CvBridge()
-    image = bridge.imgmsg_to_cv2(msg)
-    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    cv2.imwrite('capture.png', rgb)
-    image_sub.unregister()
-    print('Capture saved in a file named "capture.png". Exiting.')
-    rospy.signal_shutdown("Task completed")
+def main(args=None):
+    rclpy.init(args=args)
+    capture_image_node = CaptureImage()
+    rclpy.spin(capture_image_node)
 
+if __name__ == '__main__':
+    main()
 
-rospy.init_node('platform_watcher')
-camera_topic = fetch_param('~platform_camera_topic', camera_topic)
-print('Waiting for image msg...')
-image_sub = rospy.Subscriber(camera_topic, Image, image_callback)
-rospy.spin()

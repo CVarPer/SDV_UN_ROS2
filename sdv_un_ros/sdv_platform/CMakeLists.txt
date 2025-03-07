@@ -1,20 +1,24 @@
-cmake_minimum_required(VERSION 3.0.2)
-project(sdv_platform)
+# CMake mínimo necesario para ROS 2
+cmake_minimum_required(VERSION 3.5)
 
-find_package(catkin REQUIRED COMPONENTS
-  rospy
-  std_msgs
+# Nombre del proyecto
+project(camera_platform)
+
+# Se habilita el soporte para Python
+find_package(ament_cmake REQUIRED)
+find_package(rclpy REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+
+# Asegurarse de que se instale el código de Python
+install(
+  DIRECTORY src/
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES sdvun_platform
-#  CATKIN_DEPENDS rospy std_msgs
-#  DEPENDS system_lib
-)
+# Dependencias para el sistema de instalación de Python
+#ament_python_install_package(${PROJECT_NAME})
 
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
-)
+# Incluir los archivos Python en el entorno de ejecución
+ament_package()
 

@@ -1,27 +1,28 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.8)
 project(sdv_joystick)
 
-## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++11)
+# Enable C++17 (ROS 2 recommends C++17 or later)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+add_executable(sdv_joystick_node src/sdv_joystick_node.cpp)
+
+ament_target_dependencies(sdv_joystick_node
+  rclcpp
   std_msgs
   geometry_msgs
   sensor_msgs
 )
 
-catkin_package(CATKIN_DEPENDS geometry_msgs sensor_msgs std_msgs)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
+install(TARGETS sdv_joystick_node
+  DESTINATION lib/${PROJECT_NAME}
 )
 
-add_executable(${PROJECT_NAME}_node
-  src/sdv_joystick_node.cpp
-)
+ament_package()
 
-target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-)
