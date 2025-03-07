@@ -17,9 +17,9 @@
   <exec_depend>cv_bridge</exec_depend>
   
   <!-- Dependencies for runtime -->
-  <exec_depend>opencv</exec_depend>
+  <exec_depend>opencv</exec_depend> <!-- Confirm this is installed -->
 
-  <!-- Testing dependencies (optional) -->
+  <!-- Test dependencies (optional) -->
   <!-- <test_depend>ament_lint</test_depend> -->
   <!-- <test_depend>ament_lint_common</test_depend> -->
 

@@ -16,8 +16,8 @@ install(
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Dependencias para el sistema de instalación de Python
-#ament_python_install_package(${PROJECT_NAME})
+# Si el paquete contiene código Python, descomenta la línea siguiente:
+# ament_python_install_package(${PROJECT_NAME})
 
 # Incluir los archivos Python en el entorno de ejecución
 ament_package()

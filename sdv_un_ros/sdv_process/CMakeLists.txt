@@ -7,6 +7,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sdv_serial REQUIRED)
 
 # Generate messages
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -37,7 +38,7 @@ install(
 )
 
 # Export dependencies
-ament_export_dependencies(rosidl_default_runtime rclpy std_msgs geometry_msgs)
+ament_export_dependencies(rosidl_default_runtime rclpy std_msgs geometry_msgs sdv_serial)
 
 ament_package()
 
