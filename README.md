@@ -5,61 +5,97 @@ Sincethere are several aspects of SDV_UN development documented in existing docu
 
 # Migration Guide
 
-## **Table of Contents**
-
 1. **[Introduction](#introduction)**
-   - [Migration objectives](#11-migration-objectives)  
-   - [General considerations about ROS 1 vs ROS 2](#12-general-considerations-about-ros-1-vs-ros-2)  
-   - [General migration strategy](#13-general-migration-strategy)  
-
+   - [Migration objectives](#11-migration-objectives)
+   - [General migration strategy](#12-general-migration-strategy)
 2. **[Comparative Analysis and Preparation](#comparative-analysis-and-preparation)**
-   - [Key differences between ROS 1 and ROS 2](#21-key-differences-between-ros-1-and-ros-2)  
-   - [Useful tools for migration](#22-useful-tools-for-migration)  
-   - [Recommended workflow](#23-recommended-workflow)  
+   - [General considerations about ROS 1 vs ROS 2](#21-general-considerations-about-ros-1-vs-ros-2)
+     - [Architecture and Communication Changes](#211-architecture-and-communication-changes)
+     - [Build System and Package Management](#212-build-system-and-package-management)
+     - [Launch System and Parameter Management](#213-launch-system-and-parameter-management)
+     - [Compatibility and Migration Challenges](#214-compatibility-and-migration-challenges)
+     - [Summary of Key Differences](#215-summary-of-key-differences)
+   - [Useful tools for migration](#22-useful-tools-for-migration)
+   - [Recommended workflow](#23-recommended-workflow)
+3. **[General Setup](#general-setup)**
+   - [Installing and configuring ROS 2 Jazzy on Ubuntu 24.04](#31-installing-and-configuring-ros-2-jazzy-on-ubuntu-2404)
+   - [Strategies for testing and comparing ROS 1 (Ubuntu 18.04) vs ROS 2 (Ubuntu 24.04)](#32-strategies-for-testing-and-comparing-ros-1-ubuntu-1804-vs-ros-2-ubuntu-2404)
+4. **[Package Migration](#4-package-migration)**
+   - **[4.1 `sdv_msgs`](#41-sdv_msgs-message-and-service-migration)** (Messages and services)
+     - [Adapting `msg` and `srv` definitions](#411-adapting-msg-and-srv-definitions)
+     - [Converting `CMakeLists.txt` and `package.xml`](#412-converting-cmakeliststxt-and-packagexml)
+     - [Using `rosidl` for message generation in ROS 2](#413-using-rosidl-for-message-generation-in-ros-2)
+   - **[4.2 `sdv_nav`](#42-sdv_nav-navigation-and-peripherals-migration)** (Navigation and peripherals)
+     - [Migrating the Navigation Stack from ROS 1 to ROS 2](#421-migrating-the-navigation-stack-from-ros-1-to-ros-2)
+     - [Adjusting launch files](#422-adjusting-launch-files)
+     - [Dealing with parameter files](#423-dealing-with-parameter-files)
+   - **[4.3 `sdv_process`](#43-sdv_process-process-migration)** (Process and control)
+     - [Node migration](#431-node-migration)
+     - [Adapting scripts](#432-adapting-scripts)
+     - [Managing dependencies](#433-managing-dependencies)
+5. **[Testing and Validation](#testing-and-validation)**
+   - [Strategies for unit and integration tests](#51-strategies-for-unit-and-integration-tests)
+   - [Verifying communication between nodes](#52-verifying-communication-between-nodes)
+   - [Debugging and analyzing logs in ROS 2](#53-debugging-and-analyzing-logs-in-ros-2)
+6. **[Best Practices and Recommendations](#best-practices-and-recommendations)**
+   - [Guidelines to maintain code consistency](#61-guidelines-to-maintain-code-consistency)
+   - [Version control and documentation](#62-version-control-and-documentation)
+   - [Performance optimization in ROS 2](#63-performance-optimization-in-ros-2)
+7. **[Conclusion and Next Steps](#conclusion-and-next-steps)**
+   - [Evaluation of the migration process](#71-evaluation-of-the-migration-process)
+   - [Further adjustments and optimizations](#72-further-adjustments-and-optimizations)
 
-3. **[General Setup](#setup)**  
-   - [Installing and configuring ROS 2 Jazzy on Ubuntu 24.04](#31-installing-and-configuring-ros-2-jazzy-on-ubuntu-2404)  
-   - [Strategies for testing and comparing ROS 1 (Ubuntu 18.04) vs ROS 2 (Ubuntu 24.04)](#32-strategies-for-testing-and-comparing-ros-1-ubuntu-1804-vs-ros-2-ubuntu-2404)  
 
-4. **[Package Migration](#package-migration)**
-   - **[4.1 `sdv_msgs`](#sdv_msgs-message-and-service-migration)** (Messages and services)  
-     - [Adapting `msg` and `srv` definitions](#adapting-msg-and-srv-definitions)  
-     - [Converting `CMakeLists.txt` and `package.xml`](#converting-cmakeliststxt-and-packagexml)  
-     - [Using `rosidl` for message generation in ROS 2](#using-rosidl-for-message-generation-in-ros-2)  
-   - **[4.2 `sdv_nav`](#sdv_nav-navigation-and-peripherals-migration)** (Navigation and peripherals)  
-     - [Migrating the Navigation Stack from ROS 1 to ROS 2](#migrating-the-navigation-stack-from-ros-1-to-ros-2)  
-     - [Adjusting launch files](#adjusting-launch-files)  
-     - [Dealing with parameter files](#dealing-with-parameter-files)  
-   - **[4.3 `sdv_process`](#sdv_process-process-migration)** (Process and control)  
-     - [Node migration](#node-migration)  
-     - [Adapting scripts](#adapting-scripts)  
-     - [Managing dependencies](#managing-dependencies)  
-
-5. **[Testing and Validation](#testing-and-validation)**  
-   - [Strategies for unit and integration tests](#strategies-for-unit-and-integration-tests)  
-   - [Verifying communication between nodes](#verifying-communication-between-nodes)  
-   - [Debugging and analyzing logs in ROS 2](#debugging-and-analyzing-logs-in-ros-2)  
-
-6. **[Best Practices and Recommendations](#best-practices-and-recommendations)**  
-   - [Guidelines to maintain code consistency](#guidelines-to-maintain-code-consistency)  
-   - [Version control and documentation](#version-control-and-documentation)  
-   - [Performance optimization in ROS 2](#performance-optimization-in-ros-2)  
-
-7. **[Conclusion and Next Steps](#conclusion-and-next-steps)**  
-   - [Evaluation of the migration process](#evaluation-of-the-migration-process)  
-   - [Further adjustments and optimizations](#further-adjustments-and-optimizations) 
-# **ROS 1 Melodic to ROS 2 Jazzy Migration Guide**
+---
 
 ## **1. Introduction**  
 
-### **1.1 Migration Objectives**  
+
+### 1.1 Migration Objectives
+- Understand how existing works can contribute and be leveraged to future developments 
+- Explore 
+
+### 1.2 General Migration Strategy
+
+Migrating from ROS 1 to ROS 2 requires a structured approach to ensure system stability and functionality. This section outlines a step-by-step strategy to transition smoothly while maintaining compatibility throughout the process.
+
+#### 1.2.1 Migration Phases
+
+The migration process is divided into the following key phases:
+
+1. **Assessment and Planning**  
+   - Identify all ROS 1 packages and their dependencies.  
+   - Categorize packages based on complexity and migration priority.  
+   - Define key functionalities to be tested after migration.
+
+2. **Environment Setup**  
+   - Install ROS 2 Jazzy on Ubuntu 24.04.  
+   - Set up workspaces for parallel development (e.g., `ros1_ws` and `ros2_ws`).  
+   - Install and configure the `ros1_bridge` to allow temporary interoperability.
+
+3. **Package-by-Package Migration**  
+   - Start with message definitions (`sdv_msgs`).  
+   - Migrate core functionalities and communication layers (e.g., `sdv_nav`, `sdv_serial`).  
+   - Adapt higher-level logic (e.g., `sdv_process`, `sdv_joystick`, `sdv_platform`).
+
+4. **Testing and Validation**  
+   - Verify each migrated package independently.  
+   - Test inter-package communication in ROS 2.  
+   - Compare outputs between ROS 1 and ROS 2 using tools like rosbag.
+
+5. **Optimization and Deployment**  
+   - Fine-tune DDS QoS settings and other performance parameters.  
+   - Refactor remaining legacy code where necessary.  
+   - Deploy the fully migrated ROS 2 system.
 
 
-### **1.2 General Considerations about ROS 1 vs ROS 2**  
+## **2. Comparative Analysis and Preparation**  
+
+### **2.1 General Considerations about ROS 1 vs ROS 2**  
 
 When migrating from ROS 1 to ROS 2, it is crucial to understand the fundamental differences between the two versions. ROS 2 was designed to overcome some limitations of ROS 1, introducing a more robust and scalable framework. Below, we highlight key aspects to consider:
 
-#### **1.2.1 Architecture and Communication Changes**  
+#### **2.1.1 Architecture and Communication Changes**  
 
 ##### **Middleware (DDS - Data Distribution Service)- How does it communicate**  
 - ROS 2 uses DDS as the communication backend instead of ROS 1 master node.  
@@ -77,7 +113,7 @@ When migrating from ROS 1 to ROS 2, it is crucial to understand the fundamental 
 
 ---
 
-### **1.2.2 Build System and Package Management**  
+### **2.1.2 Build System and Package Management**  
 
 #### **Colcon vs Catkin**  
 - ROS 2 replaces `catkin_make` and `catkin_tools` with `colcon`, a more powerful and flexible build system.  
@@ -123,7 +159,7 @@ As for package.xml files, they contain metadata about a package, such as its nam
 
 ---
 
-### **1.2.3 Launch System and Parameter Management**  
+### **2.1.3 Launch System and Parameter Management**  
 
 #### **Launch Files with Python**  
 - ROS 2 replaces XML-based launch files with Python-based `.launch.py` scripts.  
@@ -135,7 +171,7 @@ As for package.xml files, they contain metadata about a package, such as its nam
 
 ---
 
-### **1.2.4 Compatibility and Migration Challenges**  
+### **2.1.4 Compatibility and Migration Challenges**  
 
 #### **Bridging ROS 1 and ROS 2**  
 - The `ros1_bridge` package allows communication between ROS 1 and ROS 2 nodes.  
@@ -148,7 +184,7 @@ As for package.xml files, they contain metadata about a package, such as its nam
 
 ---
 
-### **1.2.5 Summary of Key Differences**  
+### **2.1.5 Summary of Key Differences**  
 
 | Feature                 | ROS 1 (Melodic)                    | ROS 2 (Jazzy)                    |
 |-------------------------|----------------------------------|----------------------------------|
@@ -163,24 +199,6 @@ As for package.xml files, they contain metadata about a package, such as its nam
 | **Serial Communication** | `rosserial`                     | Requires alternative libraries |
 
 For a successful migration, understanding these differences is crucial. The next sections will focus on applying these concepts to migrate individual packages. 
-
-
-### **1.3 General Migration Strategy**  
-
-
-
-## **2. Comparative Analysis and Preparation**  
-
-### **2.1 Key Differences between ROS 1 and ROS 2**  
-_(Message passing, node lifecycle, launch system, parameters, DDS, etc.)_  
-
-### **2.2 Useful Tools for Migration**  
-_(ros1_bridge, ros2 bag, colcon, rviz2, rqt, etc.)_  
-
-### **2.3 Recommended Workflow**  
-_(Define a structured process for migrating each package, verifying functionality at every step.)_  
-
----
 
 ---
 
@@ -233,36 +251,29 @@ _(Running both environments for side-by-side testing.)_
 
 ## **4. Package Migration**  
 
-### **4.1 `sdv_msgs` - Message and Service Migration**  
-#### **4.1.1 Adapting `msg` and `srv` Definitions**  
-#### **4.1.2 Converting `CMakeLists.txt` and `package.xml`**  
-#### **4.1.3 Using `rosidl` for Message Generation in ROS 2**  
+A brief description of packages content and 
 
-### **4.2 `sdv_nav` - Navigation and Peripherals Migration**  
-#### **4.2.1 Migrating the Navigation Stack from ROS 1 to ROS 2**  
-#### **4.2.2 Configuring `nav2` and Adapting Parameters**  
-#### **4.2.3 Converting `launch` Files to `launch.py`**  
-#### **4.2.4 Adapting `tf` and `tf2`**  
+1. **`sdv_msgs`** (Message and service definitions)  
+   - Ensures that all nodes can communicate correctly in ROS 2.  
 
-### **4.3 `sdv_serial` - Hardware Communication Migration**  
-#### **4.4.1 Adapting `serial` Communication in ROS 2**  
-#### **4.4.2 Migrating Control Nodes**  
-#### **4.4.3 Converting `rosserial` or Alternative Solutions in ROS 2**  
+2. **`sdv_nav`** (Navigation and peripherals)  
+   - Core functionality required for SDV movement and mapping.  
 
-### **4.4 `sdv_process` - PRIA and Control Node Migration**  
-#### **4.4.1 Adapting Execution Logic to ROS 2**  
-#### **4.4.2 Implementing `rclcpp` and `rclpy`**  
-#### **4.4.3 Using `Lifecycle Nodes`**  
+3. **`sdv_serial`** (Hardware communication)  
+   - Adapts communication with external controllers (e.g., Tiva board).  
 
-### **4.5 `sdv_joystick` - Joystick Control Migration**  
-#### **4.5.1 Using `joy` in ROS 2**  
-#### **4.5.2 Adapting Control Messages**  
-#### **4.5.3 Remapping Joystick Button Configuration**  
+4. **`sdv_process`** (PRIA and logic control)  
+   - Ensures execution logic works correctly in ROS 2.  
 
-### **4.6 `sdv_platform` - Object Detection Migration**  
-#### **4.6.1 Configuring Nodes for Flexiforce Sensors**  
-#### **4.6.2 Adapting Data Processing**  
-#### **4.6.3 Converting `dynamic_reconfigure` to ROS 2 Parameters**  
+5. **`sdv_joystick`** (Joystick control)  
+   - Adapts control inputs to the new ROS 2 interface.  
+
+6. **`sdv_platform`** (Object detection and sensors)  
+   - Converts Flexiforce sensor processing and adapts the detection logic.  
+
+7. **`ros_coms` and `sdvun_sim`** (Communications and simulation)  
+   - Final adjustments for communication and testing in a simulated environment.  
+
 
 
 ## **5. Testing and Validation**  
