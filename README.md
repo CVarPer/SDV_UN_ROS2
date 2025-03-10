@@ -33,18 +33,6 @@ Sincethere are several aspects of SDV_UN development documented in existing docu
      - [Node migration](#431-node-migration)
      - [Adapting scripts](#432-adapting-scripts)
      - [Managing dependencies](#433-managing-dependencies)
-5. **[Testing and Validation](#testing-and-validation)**
-   - [Strategies for unit and integration tests](#51-strategies-for-unit-and-integration-tests)
-   - [Verifying communication between nodes](#52-verifying-communication-between-nodes)
-   - [Debugging and analyzing logs in ROS 2](#53-debugging-and-analyzing-logs-in-ros-2)
-6. **[Best Practices and Recommendations](#best-practices-and-recommendations)**
-   - [Guidelines to maintain code consistency](#61-guidelines-to-maintain-code-consistency)
-   - [Version control and documentation](#62-version-control-and-documentation)
-   - [Performance optimization in ROS 2](#63-performance-optimization-in-ros-2)
-7. **[Conclusion and Next Steps](#conclusion-and-next-steps)**
-   - [Evaluation of the migration process](#71-evaluation-of-the-migration-process)
-   - [Further adjustments and optimizations](#72-further-adjustments-and-optimizations)
-
 
 ---
 
@@ -273,39 +261,3 @@ A brief description of packages content and
 
 7. **`ros_coms` and `sdvun_sim`** (Communications and simulation)  
    - Final adjustments for communication and testing in a simulated environment.  
-
-
-
-## **5. Testing and Validation**  
-
-### **5.1 Strategies for Unit and Integration Tests**  
-_(Testing individual components before integration.)_  
-
-### **5.2 Verifying Communication between Nodes**  
-_(Ensuring correct message passing and inter-node communication.)_  
-
-### **5.3 Debugging and Analyzing Logs in ROS 2**  
-_(Tools and techniques for troubleshooting.)_  
-
----
-
-## **6. Best Practices and Recommendations**  
-
-### **6.1 Guidelines to Maintain Code Consistency**  
-_(Standardization of coding practices.)_  
-
-### **6.2 Version Control and Documentation**  
-_(Git best practices, documentation strategies.)_  
-
-### **6.3 Performance Optimization in ROS 2**  
-_(Reducing latency, optimizing resources.)_  
-
----
-
-## **7. Conclusion and Next Steps**  
-
-### **7.1 Evaluation of the Migration Process**  
-_(Assessing success and identifying gaps.)_  
-
-### **7.2 Further Adjustments and Optimizations**  
-_(Potential improvements and future developments.)_  
